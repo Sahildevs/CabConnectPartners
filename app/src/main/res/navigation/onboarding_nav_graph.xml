@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/onboarding_nav_graph"
+    app:startDestination="@id/splashFragment">
+
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.example.uberdrive.ui.onboarding.fragments.SplashFragment"
+        android:label="SplashFragment" >
+        <action
+            android:id="@+id/action_splashFragment_to_phoneAuthFragment"
+            app:destination="@id/phoneAuthFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/phoneAuthFragment"
+        android:name="com.example.uberdrive.ui.onboarding.fragments.PhoneAuthFragment"
+        android:label="PhoneAuthFragment" >
+        <action
+            android:id="@+id/action_phoneAuthFragment_to_otpAuthFragment"
+            app:destination="@id/otpAuthFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/otpAuthFragment"
+        android:name="com.example.uberdrive.ui.onboarding.fragments.OtpAuthFragment"
+        android:label="OtpAuthFragment" >
+        <action
+            android:id="@+id/action_otpAuthFragment_to_driverDetailsFragment"
+            app:destination="@id/driverDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/driverDetailsFragment"
+        android:name="com.example.uberdrive.ui.onboarding.fragments.DriverDetailsFragment"
+        android:label="DriverDetailsFragment" >
+        <action
+            android:id="@+id/action_driverDetailsFragment_to_vehicleDetailsFragment"
+            app:destination="@id/vehicleDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/vehicleDetailsFragment"
+        android:name="com.example.uberdrive.ui.onboarding.fragments.VehicleDetailsFragment"
+        android:label="VehicleDetailsFragment" />
+</navigation>

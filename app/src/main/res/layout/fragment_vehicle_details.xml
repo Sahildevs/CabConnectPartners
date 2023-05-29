@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.onboarding.fragments.UserDetailsFragment">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/bg_onboarding_screens"
+            android:scaleType="centerCrop"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PERSONALISE!"
+                style="@style/text_style_large_title_text" />
+
+            <TextView
+                android:layout_width="320dp"
+                android:layout_height="wrap_content"
+                android:text="Get ready to hit the road with confidence, ensuring a smooth and a reliable ride           for our riders"
+                style="@style/text_style_yellow_medium_text" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="100dp" />
+
+            <EditText
+                android:id="@+id/et_name"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginHorizontal="20dp"
+                android:padding="10dp"
+                android:background="@drawable/bg_edit_text_phone_no"
+                android:hint="Model Name"
+                android:drawableStart="@drawable/ic_avatar"
+                android:drawablePadding="15dp"
+                android:textColorHint="@color/yellow"
+                android:maxLines="1"
+                android:letterSpacing="0.1"
+                style="@style/text_style_yellow_medium_text"/>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="20dp" />
+
+            <EditText
+                android:id="@+id/et_phone"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginHorizontal="20dp"
+                android:padding="10dp"
+                android:hint="Number Plate"
+                android:maxLength="10"
+                android:enabled="true"
+                android:drawableStart="@drawable/ic_phone"
+                android:drawablePadding="15dp"
+                android:textColorHint="@color/yellow"
+                android:letterSpacing="0.1"
+                android:background="@drawable/bg_edit_text_phone_no"
+                style="@style/text_style_yellow_medium_text"/>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="20dp" />
+
+            <EditText
+                android:id="@+id/et_licence"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginHorizontal="20dp"
+                android:padding="10dp"
+                android:hint="Licence Number"
+                android:maxLength="10"
+                android:enabled="true"
+                android:drawableStart="@drawable/ic_phone"
+                android:drawablePadding="15dp"
+                android:textColorHint="@color/yellow"
+                android:letterSpacing="0.1"
+                android:background="@drawable/bg_edit_text_phone_no"
+                style="@style/text_style_yellow_medium_text"/>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_login"
+                    android:text="login"
+                    style="@style/small_button_style" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
