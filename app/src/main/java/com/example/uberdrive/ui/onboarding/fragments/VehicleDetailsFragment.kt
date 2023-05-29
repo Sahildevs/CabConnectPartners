@@ -8,8 +8,9 @@ import android.view.ViewGroup
 import com.example.uberdrive.R
 import com.example.uberdrive.databinding.FragmentSplashBinding
 import com.example.uberdrive.databinding.FragmentVehicleDetailsBinding
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class VehicleDetailsFragment : Fragment() {
 
     lateinit var binding: FragmentVehicleDetailsBinding

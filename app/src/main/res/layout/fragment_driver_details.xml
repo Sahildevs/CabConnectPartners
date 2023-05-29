@@ -77,6 +77,26 @@
 
             <Space
                 android:layout_width="wrap_content"
+                android:layout_height="20dp" />
+
+            <EditText
+                android:id="@+id/et_license"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginHorizontal="20dp"
+                android:padding="10dp"
+                android:hint="License Number"
+                android:maxLength="10"
+                android:enabled="true"
+                android:drawableStart="@drawable/ic_license"
+                android:drawablePadding="15dp"
+                android:textColorHint="@color/yellow"
+                android:letterSpacing="0.1"
+                android:background="@drawable/bg_edit_text_phone_no"
+                style="@style/text_style_yellow_medium_text"/>
+
+            <Space
+                android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1" />
 
@@ -91,7 +111,7 @@
                     android:layout_weight="1" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_login"
+                    android:id="@+id/btn_next"
                     android:text="next"
                     style="@style/small_button_style" />
 
