@@ -2,6 +2,8 @@ package com.example.uberdrive.data.api
 
 import com.example.uberdrive.data.model.AddDriverRequest
 import com.example.uberdrive.data.model.AddDriverResponse
+import com.example.uberdrive.data.model.AddVehicleRequest
+import com.example.uberdrive.data.model.AddVehicleResponse
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -14,8 +16,8 @@ interface ApiService {
     @POST("add_new_driver")
     suspend fun addDriver(@Body request: AddDriverRequest): Response<AddDriverResponse>
 
-
-
+    @POST("cars")
+    suspend fun addVehicle(@Body request: AddVehicleRequest): Response<AddVehicleResponse>
 
 
 

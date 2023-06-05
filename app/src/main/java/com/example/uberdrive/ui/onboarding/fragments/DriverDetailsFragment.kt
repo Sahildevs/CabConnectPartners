@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.uberdrive.R
 import com.example.uberdrive.databinding.FragmentDriverDetailsBinding
 import com.example.uberdrive.databinding.FragmentSplashBinding
@@ -92,8 +93,10 @@ class DriverDetailsFragment : Fragment() {
     private fun serviceObserver() {
 
         onboardViewModel.responseAddDriverServiceCall.observe(viewLifecycleOwner) { result ->
-            if (result != null) {
+            if (result != null && result.isSuccessful) {
                 Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show()
+                onboardViewModel.driverId = result.body()?.driver?.id
+                findNavController().navigate(R.id.action_driverDetailsFragment_to_vehicleDetailsFragment)
             }
             else {
                 Toast.makeText(requireContext(), "ERROR", Toast.LENGTH_SHORT).show()
