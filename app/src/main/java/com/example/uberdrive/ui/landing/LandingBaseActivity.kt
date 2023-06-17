@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -64,6 +65,10 @@ class LandingBaseActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration.Builder(navController.graph).build()
 
 
+        //Defining top level destinations on which the action bar will be visible as well the hamburger
+        appBarConfiguration = AppBarConfiguration(
+            setOf(R.id.landingMapsFragment), drawerLayout
+        )
 
 
         //SETTING THE TOOLBAR IN SYNC WITH THE NAVIGATION GRAPH
@@ -72,7 +77,7 @@ class LandingBaseActivity : AppCompatActivity() {
 
         //On hamburger clicked open the navigation drawer
         actionbar.setNavigationOnClickListener {
-            drawerLayout.openDrawer(Gravity.LEFT)
+            drawerLayout.openDrawer(GravityCompat.START)
         }
 
         retrieveBundle()

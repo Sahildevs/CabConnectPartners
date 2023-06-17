@@ -3,11 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/landing_nav_graph"
-    app:startDestination="@id/mapsFragment">
+    app:startDestination="@id/landingMapsFragment">
 
     <fragment
-        android:id="@+id/mapsFragment"
+        android:id="@+id/landingMapsFragment"
         android:name="com.example.uberdrive.ui.landing.fragments.MapsFragment"
-        android:label="fragment_maps"
         tools:layout="@layout/fragment_maps" />
 </navigation>
