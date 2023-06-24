@@ -4,8 +4,10 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Gravity
+import android.widget.Switch
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -18,6 +20,7 @@ import com.example.uberdrive.databinding.ActivityLandingBaseBinding
 import com.example.uberdrive.ui.onboarding.OnboardBaseActivity
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,6 +43,9 @@ class LandingBaseActivity : AppCompatActivity() {
 
     private val navDrawer : NavigationView
         get() = binding.navDrawer
+
+    private val switchButton: SwitchMaterial
+        get() = binding.switchButton
 
     //back press timer
     var backPressedTime: Long = 0
@@ -78,6 +84,16 @@ class LandingBaseActivity : AppCompatActivity() {
         //On hamburger clicked open the navigation drawer
         actionbar.setNavigationOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
+        }
+
+        switchButton.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                // Switch is ON
+                Toast.makeText(this, "You are live", Toast.LENGTH_SHORT).show()
+            } else {
+                // Switch is OFF
+                Toast.makeText(this, "You are offline", Toast.LENGTH_SHORT).show()
+            }
         }
 
         retrieveBundle()

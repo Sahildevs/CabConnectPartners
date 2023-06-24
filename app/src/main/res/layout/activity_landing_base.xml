@@ -41,7 +41,19 @@
                         app:titleCentered="true"
                         app:titleTextAppearance="@style/CustomAppBarTitle"
                         app:titleMarginBottom="19dp"
-                        app:navigationIcon="@drawable/ic_hamburger_menu" />
+                        app:navigationIcon="@drawable/ic_hamburger_menu" >
+
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/switchButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            android:padding="8dp"
+                            app:trackTint="@color/yellow"
+                            app:thumbTint="@color/white"
+                             />
+
+                    </com.google.android.material.appbar.MaterialToolbar>
 
                 </com.google.android.material.appbar.AppBarLayout>
 
