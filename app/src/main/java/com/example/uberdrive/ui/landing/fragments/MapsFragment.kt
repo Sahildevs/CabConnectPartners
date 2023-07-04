@@ -10,8 +10,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.activityViewModels
 import com.example.uberdrive.R
 import com.example.uberdrive.databinding.FragmentMapsBinding
+import com.example.uberdrive.ui.landing.LandingBaseViewModel
 import com.example.uberdrive.utils.LocationUtils
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -20,7 +22,9 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MapsFragment : Fragment() {
 
     lateinit var binding: FragmentMapsBinding
@@ -28,7 +32,7 @@ class MapsFragment : Fragment() {
     private lateinit var locationUtils: LocationUtils
     private lateinit var mMap: GoogleMap
 
-
+    private val landingBaseViewModel: LandingBaseViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -122,6 +126,17 @@ class MapsFragment : Fragment() {
 
                 val latLng = LatLng(location.latitude, location.longitude)
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18f))
+
+                //Store updated location to view model
+                landingBaseViewModel.currentLat = location.latitude.toString()
+                landingBaseViewModel.currentLng = location.longitude.toString()
+
+                //Update the vehicle location in firestore only if the driver is live
+                if (landingBaseViewModel.isLive) {
+                    landingBaseViewModel.updateActiveDriverData()
+                }
+
+
             }
         })
 

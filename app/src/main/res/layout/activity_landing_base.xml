@@ -39,6 +39,7 @@
                         android:elevation="10dp"
                         app:title="CabConnect"
                         app:titleCentered="true"
+                        app:titleTextColor="@color/yellow"
                         app:titleTextAppearance="@style/CustomAppBarTitle"
                         app:titleMarginBottom="19dp"
                         app:navigationIcon="@drawable/ic_hamburger_menu" >

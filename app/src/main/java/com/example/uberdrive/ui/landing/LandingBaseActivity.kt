@@ -11,6 +11,7 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -22,6 +23,9 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,9 +33,9 @@ class LandingBaseActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityLandingBaseBinding
 
-    lateinit var navController: NavController
-    lateinit var appBarConfiguration: AppBarConfiguration
-    lateinit var auth: FirebaseAuth
+    private lateinit var navController: NavController
+    private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var auth: FirebaseAuth
 
 
     //ACCESSING VIEWS FROM LAYOUT
@@ -86,17 +90,11 @@ class LandingBaseActivity : AppCompatActivity() {
             drawerLayout.openDrawer(GravityCompat.START)
         }
 
-        switchButton.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                // Switch is ON
-                Toast.makeText(this, "You are live", Toast.LENGTH_SHORT).show()
-            } else {
-                // Switch is OFF
-                Toast.makeText(this, "You are offline", Toast.LENGTH_SHORT).show()
-            }
-        }
+        onSwitchButtonClicked()
 
         retrieveBundle()
+
+        firebaseServiceObserver()
 
         onDrawerMenuClickListener()
 
@@ -143,7 +141,58 @@ class LandingBaseActivity : AppCompatActivity() {
 
     }
 
+    //Handle the vehicle discoverable status
+    private fun onSwitchButtonClicked() {
 
+        switchButton.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                // Switched ON
+                landingViewModel.isLive = true
+                goLive()
+            } else {
+                // Switched OFF
+                goOffline()
+            }
+        }
+
+    }
+
+
+    /** Firebase service call */
+    private fun goLive() {
+        landingViewModel.goLive()
+    }
+
+    /** Firebase service call */
+    private fun goOffline() {
+        landingViewModel.goOffline()
+    }
+
+
+    private fun firebaseServiceObserver() {
+
+        landingViewModel.responseGoLive.observe(this, Observer {
+            if (it.isNotEmpty()) {
+                when (it) {
+                    "success" -> Toast.makeText(this, "You are live", Toast.LENGTH_SHORT).show()
+
+                    "failed" -> Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+
+        landingViewModel.responseGoOffline.observe(this, Observer {
+            if (it.isNotEmpty()) {
+                when (it) {
+                    "success" -> Toast.makeText(this, "You are offline", Toast.LENGTH_SHORT).show()
+
+                    "failed" -> Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+
+
+    }
 
 
     override fun onBackPressed() {
