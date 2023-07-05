@@ -128,8 +128,8 @@ class MapsFragment : Fragment() {
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18f))
 
                 //Store updated location to view model
-                landingBaseViewModel.currentLat = location.latitude.toString()
-                landingBaseViewModel.currentLng = location.longitude.toString()
+                landingBaseViewModel.currentLat = location.latitude
+                landingBaseViewModel.currentLng = location.longitude
 
                 //Update the vehicle location in firestore only if the driver is live
                 if (landingBaseViewModel.isLive) {

@@ -3,30 +3,27 @@ package com.example.uberdrive.ui.landing
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Gravity
-import android.widget.Switch
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.uberdrive.R
+import com.example.uberdrive.data.model.VehicleStatus
 import com.example.uberdrive.databinding.ActivityLandingBaseBinding
 import com.example.uberdrive.ui.onboarding.OnboardBaseActivity
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class LandingBaseActivity : AppCompatActivity() {
@@ -94,7 +91,7 @@ class LandingBaseActivity : AppCompatActivity() {
 
         retrieveBundle()
 
-        firebaseServiceObserver()
+        serviceObserver()
 
         onDrawerMenuClickListener()
 
@@ -149,6 +146,7 @@ class LandingBaseActivity : AppCompatActivity() {
                 // Switched ON
                 landingViewModel.isLive = true
                 goLive()
+
             } else {
                 // Switched OFF
                 goOffline()
@@ -168,26 +166,45 @@ class LandingBaseActivity : AppCompatActivity() {
         landingViewModel.goOffline()
     }
 
+    /** Service call */
+    private fun updateVehicle(status: VehicleStatus) {
+        lifecycleScope.launch {
+            landingViewModel.updateVehicleServiceCall(status)
+        }
+    }
 
-    private fun firebaseServiceObserver() {
+    private fun serviceObserver() {
 
-        landingViewModel.responseGoLive.observe(this, Observer {
-            if (it.isNotEmpty()) {
-                when (it) {
-                    "success" -> Toast.makeText(this, "You are live", Toast.LENGTH_SHORT).show()
+        landingViewModel.responseGoLive.observe(this, Observer { result ->
+            if (result.isNotEmpty()) {
+                when (result) {
+                    "success" -> {
+                        Toast.makeText(this, "You are live", Toast.LENGTH_SHORT).show()
+                        updateVehicle(VehicleStatus.AVAILABLE)
+                                 }
 
                     "failed" -> Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
                 }
             }
         })
 
-        landingViewModel.responseGoOffline.observe(this, Observer {
-            if (it.isNotEmpty()) {
-                when (it) {
-                    "success" -> Toast.makeText(this, "You are offline", Toast.LENGTH_SHORT).show()
+        landingViewModel.responseGoOffline.observe(this, Observer { result ->
+            if (result.isNotEmpty()) {
+                when (result) {
+                    "success" -> {
+                        Toast.makeText(this, "You are offline", Toast.LENGTH_SHORT).show()
+                        updateVehicle(VehicleStatus.BUSY)
+                    }
 
                     "failed" -> Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
                 }
+            }
+        })
+
+        landingViewModel.responseUpdateVehicleServiceCall.observe(this, Observer { result ->
+            if (result.isSuccessful) {
+                Toast.makeText(this, "Update Successful", Toast.LENGTH_SHORT).show()
+
             }
         })
 

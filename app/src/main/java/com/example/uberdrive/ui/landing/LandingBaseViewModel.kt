@@ -4,12 +4,18 @@ import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.uberdrive.data.model.LocationData
+import com.example.uberdrive.data.model.UpdateVehicleRequest
+import com.example.uberdrive.data.model.UpdateVehicleResponse
+import com.example.uberdrive.data.model.VehicleStatus
+import com.example.uberdrive.data.repository.MainRepository
 import com.example.uberdrive.utils.FirebaseUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
-class LandingBaseViewModel @Inject constructor(): ViewModel() {
+class LandingBaseViewModel @Inject constructor(private val repository: MainRepository): ViewModel() {
 
     /** Driver details */
     var name: String? = null
@@ -20,8 +26,8 @@ class LandingBaseViewModel @Inject constructor(): ViewModel() {
     var vehicleId: Int? = null
 
     /** Vehicle location details */
-    var currentLat: String? = null
-    var currentLng: String? = null
+    var currentLat: Double? = null
+    var currentLng: Double? = null
 
     var isLive: Boolean = false
     private val firebaseUtils = FirebaseUtils()
@@ -32,13 +38,16 @@ class LandingBaseViewModel @Inject constructor(): ViewModel() {
     private var _responseGoOffline = MutableLiveData<String>()
     val responseGoOffline: LiveData<String> = _responseGoOffline
 
+    private var _responseUpdateVehicleServiceCall = MutableLiveData<Response<UpdateVehicleResponse>>()
+    val responseUpdateVehicleServiceCall: LiveData<Response<UpdateVehicleResponse>> = _responseUpdateVehicleServiceCall
+
 
 
     /** Add active driver firebase service call */
     fun goLive() {
         val map = mutableMapOf<String, String>()
-        map["Lat"] = currentLat!!
-        map["Lng"] = currentLng!!
+        map["Lat"] = currentLat.toString()
+        map["Lng"] = currentLng.toString()
 
         firebaseUtils.addActiveDriver(
             map = map,
@@ -65,20 +74,35 @@ class LandingBaseViewModel @Inject constructor(): ViewModel() {
                     _responseGoOffline.postValue(it)
                 }
             )
+
             isLive = false
         }
 
     }
 
-    /** Update the lat lng of the active driver */
+    /** Update active driver lat lng firebase service call */
     fun updateActiveDriverData() {
         val map = mutableMapOf<String, String>()
-        map["Lat"] = currentLat!!
-        map["Lng"] = currentLng!!
+        map["Lat"] = currentLat.toString()
+        map["Lng"] = currentLng.toString()
 
         firebaseUtils.updateActiveDriver(
             driverId = driverId.toString(),
             map = map
         )
+
+    }
+
+    /** Update vehicle details service call */
+    suspend fun updateVehicleServiceCall(status: VehicleStatus) {
+        val request = UpdateVehicleRequest(
+            cars_id = vehicleId,
+            location = LocationData(lat = currentLat, lng = currentLng),
+            state = status
+        )
+
+        val res = repository.updateVehicle(vehicleId!!, request)
+        _responseUpdateVehicleServiceCall.postValue(res)
+
     }
 }

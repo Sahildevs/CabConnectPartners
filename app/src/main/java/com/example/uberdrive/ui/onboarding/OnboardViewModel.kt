@@ -45,6 +45,7 @@ class OnboardViewModel @Inject constructor(private val repository: MainRepositor
 
     }
 
+    /** Add vehicle service call*/
     suspend fun addVehicleServiceCall() {
         val request = AddVehicleRequest(
             model = modelName,

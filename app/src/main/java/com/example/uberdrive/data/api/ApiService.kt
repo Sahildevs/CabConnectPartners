@@ -4,11 +4,15 @@ import com.example.uberdrive.data.model.AddDriverRequest
 import com.example.uberdrive.data.model.AddDriverResponse
 import com.example.uberdrive.data.model.AddVehicleRequest
 import com.example.uberdrive.data.model.AddVehicleResponse
+import com.example.uberdrive.data.model.UpdateVehicleRequest
+import com.example.uberdrive.data.model.UpdateVehicleResponse
+import com.example.uberdrive.data.model.VehicleStatus
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface ApiService {
 
@@ -18,6 +22,9 @@ interface ApiService {
 
     @POST("cars")
     suspend fun addVehicle(@Body request: AddVehicleRequest): Response<AddVehicleResponse>
+
+    @POST("cars/{cars_id}")
+    suspend fun updateVehicle(@Path("cars_id") carId: Int, @Body request: UpdateVehicleRequest) : Response<UpdateVehicleResponse>
 
 
 
