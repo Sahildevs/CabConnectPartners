@@ -2,6 +2,7 @@ package com.example.uberdrive.utils
 
 import android.widget.Toast
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 
 class FirebaseUtils {
 
@@ -30,5 +31,23 @@ class FirebaseUtils {
             .document(driverId).delete()
             .addOnSuccessListener { onSuccess("success") }
             .addOnFailureListener { onFailure("failed") }
+    }
+
+    //Listen to incoming ride requests from the firestore collection
+    fun getRideRequest(driverId: String, onSuccess: (String) -> Unit, onFailure: (exception: Exception) -> Unit)
+    : ListenerRegistration {
+
+        val collectionRef = db.collection("Ride Requests")
+        val documentRef = collectionRef.document(driverId)
+
+        //The addSnapshotListener method, establishes a real-time connection to the Firestore database,
+        // means the listener will receive updates whenever there are changes to the specified document.
+
+        return documentRef.addSnapshotListener { documentSnapshot, error ->
+            if (documentSnapshot != null && documentSnapshot.exists()) {
+                onSuccess("requested")
+            }
+        }
+
     }
 }

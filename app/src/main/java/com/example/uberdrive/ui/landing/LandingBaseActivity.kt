@@ -17,11 +17,14 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.uberdrive.R
 import com.example.uberdrive.data.model.VehicleStatus
 import com.example.uberdrive.databinding.ActivityLandingBaseBinding
+import com.example.uberdrive.ui.landing.bottomsheets.RideRequestBottomSheet
 import com.example.uberdrive.ui.onboarding.OnboardBaseActivity
+import com.example.uberdrive.utils.FirebaseUtils
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ListenerRegistration
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -34,6 +37,10 @@ class LandingBaseActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var auth: FirebaseAuth
 
+    private lateinit var firebaseUtils: FirebaseUtils
+    private lateinit var listenerRegistration: ListenerRegistration
+
+    private lateinit var rideRequestBottomSheet: RideRequestBottomSheet
 
     //ACCESSING VIEWS FROM LAYOUT
     private val actionbar : MaterialToolbar
@@ -59,6 +66,9 @@ class LandingBaseActivity : AppCompatActivity() {
 
         binding = ActivityLandingBaseBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        //Initialising the firebase utils class
+        firebaseUtils = FirebaseUtils()
 
         //Customized status bar
         window.statusBarColor = ContextCompat.getColor(this, R.color.black)
@@ -173,6 +183,15 @@ class LandingBaseActivity : AppCompatActivity() {
         }
     }
 
+    /** Service call */
+    private fun getTripDetails() {
+        lifecycleScope.launch {
+            landingViewModel.getTripDetails()
+        }
+    }
+
+
+
     private fun serviceObserver() {
 
         landingViewModel.responseGoLive.observe(this, Observer { result ->
@@ -180,7 +199,9 @@ class LandingBaseActivity : AppCompatActivity() {
                 when (result) {
                     "success" -> {
                         Toast.makeText(this, "You are live", Toast.LENGTH_SHORT).show()
-                        updateVehicle(VehicleStatus.AVAILABLE)
+
+                        updateVehicle(VehicleStatus.AVAILABLE)  //Update vehicle status in the db
+                        startListeningRideRequests()            //Start listening to incoming ride requests
                                  }
 
                     "failed" -> Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
@@ -193,7 +214,10 @@ class LandingBaseActivity : AppCompatActivity() {
                 when (result) {
                     "success" -> {
                         Toast.makeText(this, "You are offline", Toast.LENGTH_SHORT).show()
-                        updateVehicle(VehicleStatus.BUSY)
+
+                        updateVehicle(VehicleStatus.BUSY)              //Update vehicle status in the db
+                        stopListeningRideRequest()
+
                     }
 
                     "failed" -> Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
@@ -208,8 +232,55 @@ class LandingBaseActivity : AppCompatActivity() {
             }
         })
 
+        landingViewModel.responseGetTripDetailsServiceCall.observe(this, Observer { result ->
+            if (result!= null) {
+
+                landingViewModel.tripId = result.body()?.id
+                landingViewModel.pickUpLocation = result.body()?.pickUpLocation?.lat
+                landingViewModel.dropLocation = result.body()?.dropLocation?.lat
+                landingViewModel.customerName = result.body()?.riderDetails?.name
+                landingViewModel.customerPhone = result.body()?.riderDetails?.phone
+
+                showRideRequestBottomSheet()
+            }
+        })
 
     }
+
+
+    private fun showRideRequestBottomSheet() {
+        rideRequestBottomSheet = RideRequestBottomSheet()
+        rideRequestBottomSheet.show(supportFragmentManager, null)
+        rideRequestBottomSheet.isCancelable = false
+    }
+
+
+
+
+
+
+
+
+
+    //Listening to incoming ride request,
+    private fun startListeningRideRequests() {
+        listenerRegistration = firebaseUtils.getRideRequest(
+            driverId = landingViewModel.driverId.toString(),
+            onSuccess = {
+                //Ride requested
+                Toast.makeText(this, "You got a ride request", Toast.LENGTH_SHORT).show()
+                getTripDetails()
+
+            },
+            onFailure = {}
+        )
+    }
+
+    //Stops listening to incoming ride requests
+    private fun stopListeningRideRequest() {
+        listenerRegistration.remove()
+    }
+
 
 
     override fun onBackPressed() {

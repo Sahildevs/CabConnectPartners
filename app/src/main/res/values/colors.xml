@@ -11,7 +11,7 @@
     <color name="off_white">#F5F5F5</color>
     <color name="default_border_color">#C4C4C4</color>
     <color name="selected_border_color">#F9B735</color>
-    <color name="body_text_color">#232323</color>
+    <color name="custom_black">#232323</color>
     <color name="divider_color">#ECECEC</color>
     <color name="default_button_color">#000000</color>
     <color name="grey">#7D7D7D</color>

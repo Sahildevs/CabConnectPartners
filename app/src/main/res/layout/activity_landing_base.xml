@@ -42,7 +42,8 @@
                         app:titleTextColor="@color/yellow"
                         app:titleTextAppearance="@style/CustomAppBarTitle"
                         app:titleMarginBottom="19dp"
-                        app:navigationIcon="@drawable/ic_hamburger_menu" >
+                        app:navigationIcon="@drawable/ic_hamburger_menu"
+                        app:navigationIconTint="@color/yellow" >
 
                         <com.google.android.material.switchmaterial.SwitchMaterial
                             android:id="@+id/switchButton"

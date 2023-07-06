@@ -5,9 +5,9 @@ import com.example.uberdrive.data.model.AddDriverRequest
 import com.example.uberdrive.data.model.AddDriverResponse
 import com.example.uberdrive.data.model.AddVehicleRequest
 import com.example.uberdrive.data.model.AddVehicleResponse
+import com.example.uberdrive.data.model.GetTripDetailsResponse
 import com.example.uberdrive.data.model.UpdateVehicleRequest
 import com.example.uberdrive.data.model.UpdateVehicleResponse
-import com.example.uberdrive.data.model.VehicleStatus
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -24,5 +24,9 @@ class MainRepository @Inject constructor(private val apiService: ApiService) {
 
     suspend fun updateVehicle(carsId: Int, request: UpdateVehicleRequest): Response<UpdateVehicleResponse> {
         return apiService.updateVehicle(carId = carsId, request = request)
+    }
+
+    suspend fun getTripDetails(request: Int): Response<GetTripDetailsResponse> {
+        return apiService.getTripDetails(request)
     }
 }

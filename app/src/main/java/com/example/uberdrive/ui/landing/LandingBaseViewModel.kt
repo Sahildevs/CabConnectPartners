@@ -1,9 +1,9 @@
 package com.example.uberdrive.ui.landing
 
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.uberdrive.data.model.GetTripDetailsResponse
 import com.example.uberdrive.data.model.LocationData
 import com.example.uberdrive.data.model.UpdateVehicleRequest
 import com.example.uberdrive.data.model.UpdateVehicleResponse
@@ -29,6 +29,14 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
     var currentLat: Double? = null
     var currentLng: Double? = null
 
+    /** Trip request details */
+    var tripId: Int? = null
+    var pickUpLocation: Double? = null
+    var dropLocation: Double? = null
+    var customerName: String? = null
+    var customerPhone: String? = null
+
+
     var isLive: Boolean = false
     private val firebaseUtils = FirebaseUtils()
 
@@ -40,6 +48,9 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
 
     private var _responseUpdateVehicleServiceCall = MutableLiveData<Response<UpdateVehicleResponse>>()
     val responseUpdateVehicleServiceCall: LiveData<Response<UpdateVehicleResponse>> = _responseUpdateVehicleServiceCall
+
+    private var _responseGetTripDetailsServiceCall = MutableLiveData<Response<GetTripDetailsResponse>>()
+    val responseGetTripDetailsServiceCall: LiveData<Response<GetTripDetailsResponse>> = _responseGetTripDetailsServiceCall
 
 
 
@@ -105,4 +116,12 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
         _responseUpdateVehicleServiceCall.postValue(res)
 
     }
+
+    suspend fun getTripDetails() {
+        val request = vehicleId!!
+
+        val res = repository.getTripDetails(request)
+        _responseGetTripDetailsServiceCall.postValue(res)
+    }
+
 }
