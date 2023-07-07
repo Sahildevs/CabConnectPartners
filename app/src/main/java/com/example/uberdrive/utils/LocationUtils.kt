@@ -3,10 +3,12 @@ package com.example.uberdrive.utils
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.location.Location
 import android.os.Looper
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
+import java.util.Locale
 
 class LocationUtils(private val context: Context) {
 
@@ -86,6 +88,37 @@ class LocationUtils(private val context: Context) {
             //Handle last known location
             locationReceiver.onLocationReceived(location)
         }
+
+    }
+
+
+    //Converts latitude and longitude coordinates into a human-readable address using the Geocoding API
+    fun getAddressFromLatLng(lat: Double, lng: Double): String {
+
+        val geocoder = Geocoder(context, Locale.getDefault())
+
+        //The getFromLocation() method of the Geocoder class is called, passing the latitude, longitude,
+        // and a maximum result value of 1. This retrieves a list of addresses associated with the provided coordinates.
+        val addresses = geocoder.getFromLocation(lat, lng, 1)
+
+        if (addresses!!.isNotEmpty()) {
+
+            //Retrieves the first address from the list
+            val address = addresses[0]
+
+            //StringBuilder is created to concatenate the individual address lines.
+            //val sb = StringBuilder()
+
+            // Extract individual address lines
+//            for (i in 0..address.) {
+//                sb.append(address.getAddressLine(i)).append(" ")
+//            }
+
+            return address.subLocality
+
+        }
+
+        return "Address not found"
 
     }
 

@@ -31,10 +31,16 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
 
     /** Trip request details */
     var tripId: Int? = null
-    var pickUpLocation: Double? = null
-    var dropLocation: Double? = null
     var customerName: String? = null
     var customerPhone: String? = null
+    var pickUpLat: Double? = null
+    var pickUpLng: Double? = null
+    var pickUpAddress: String? = null
+    var dropLat: Double? = null
+    var dropLng: Double? = null
+    var dropAddress: String? = null
+
+
 
 
     var isLive: Boolean = false

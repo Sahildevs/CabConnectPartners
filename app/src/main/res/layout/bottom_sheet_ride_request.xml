@@ -45,17 +45,14 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_avatar" />
 
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_gravity="center_vertical" />
+
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginStart="16dp">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -163,15 +160,14 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:padding="2dp"
-                            android:text="@{viewmodel.pickUpLocation.toString()}"
+                            android:text="@{viewmodel.pickUpAddress}"
                             style="@style/text_style_cell_body_text" />
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:padding="2dp"
-                            android:text="@{viewmodel.dropLocation.toString()}"
-                            android:textAllCaps="true"
+                            android:text="@{viewmodel.dropAddress}"
                             style="@style/text_style_cell_body_text" />
 
                     </LinearLayout>

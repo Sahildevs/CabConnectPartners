@@ -8,10 +8,10 @@ data class GetTripDetailsResponse(
     var id: Int? = null,
 
     @SerializedName("pickup_location")
-    var pickUpLocation: LocationData,
+    var pickUpLocation: LocationResponse,
 
     @SerializedName("drop_location")
-    var dropLocation: LocationData,
+    var dropLocation: LocationResponse,
 
     @SerializedName("user")
     var riderDetails: RiderData

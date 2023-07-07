@@ -15,11 +15,13 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.uberdrive.R
+import com.example.uberdrive.data.model.GetTripDetailsResponse
 import com.example.uberdrive.data.model.VehicleStatus
 import com.example.uberdrive.databinding.ActivityLandingBaseBinding
 import com.example.uberdrive.ui.landing.bottomsheets.RideRequestBottomSheet
 import com.example.uberdrive.ui.onboarding.OnboardBaseActivity
 import com.example.uberdrive.utils.FirebaseUtils
+import com.example.uberdrive.utils.LocationUtils
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -27,6 +29,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ListenerRegistration
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import retrofit2.Response
 
 @AndroidEntryPoint
 class LandingBaseActivity : AppCompatActivity() {
@@ -39,6 +42,7 @@ class LandingBaseActivity : AppCompatActivity() {
 
     private lateinit var firebaseUtils: FirebaseUtils
     private lateinit var listenerRegistration: ListenerRegistration
+    private lateinit var locationUtils: LocationUtils
 
     private lateinit var rideRequestBottomSheet: RideRequestBottomSheet
 
@@ -69,6 +73,9 @@ class LandingBaseActivity : AppCompatActivity() {
 
         //Initialising the firebase utils class
         firebaseUtils = FirebaseUtils()
+
+        //Initialising the location utils class
+        locationUtils = LocationUtils(this)
 
         //Customized status bar
         window.statusBarColor = ContextCompat.getColor(this, R.color.black)
@@ -236,10 +243,15 @@ class LandingBaseActivity : AppCompatActivity() {
             if (result!= null) {
 
                 landingViewModel.tripId = result.body()?.id
-                landingViewModel.pickUpLocation = result.body()?.pickUpLocation?.lat
-                landingViewModel.dropLocation = result.body()?.dropLocation?.lat
+                landingViewModel.pickUpLat = result.body()?.pickUpLocation?.data?.lat
+                landingViewModel.pickUpLng = result.body()?.pickUpLocation?.data?.lng
+                landingViewModel.dropLat = result.body()?.dropLocation?.data?.lat
+                landingViewModel.dropLng = result.body()?.dropLocation?.data?.lng
                 landingViewModel.customerName = result.body()?.riderDetails?.name
                 landingViewModel.customerPhone = result.body()?.riderDetails?.phone
+
+                getPickupAddressFromLatLng(result)
+                getDropAddressFromLatLng(result)
 
                 showRideRequestBottomSheet()
             }
@@ -254,11 +266,32 @@ class LandingBaseActivity : AppCompatActivity() {
         rideRequestBottomSheet.isCancelable = false
     }
 
+    //Retrieves pickup address from lat lng and store it in the view-model
+    private fun getPickupAddressFromLatLng(result: Response<GetTripDetailsResponse>) {
 
+        // Execute the geocoding operation on the coroutine
+        lifecycleScope.launch {
+            landingViewModel.pickUpAddress = locationUtils
+                .getAddressFromLatLng(
+                    lat = result.body()?.pickUpLocation?.data?.lat!!,
+                    lng = result.body()?.pickUpLocation?.data?.lng!!
+                )
+        }
 
+    }
 
+    //Retrieves drop address from lat lng and store it in the view-model
+    private fun getDropAddressFromLatLng(result: Response<GetTripDetailsResponse>) {
 
-
+        // Execute the geocoding operation on the coroutine
+        lifecycleScope.launch {
+            landingViewModel.dropAddress = locationUtils
+                .getAddressFromLatLng(
+                    lat = result.body()?.dropLocation?.data?.lat!!,
+                    lng = result.body()?.dropLocation?.data?.lng!!
+                )
+        }
+    }
 
 
 
