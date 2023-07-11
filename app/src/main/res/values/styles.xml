@@ -15,9 +15,9 @@
         <item name="android:fontFamily">@font/font_roboto_medium</item>
     </style>
 
-    <style name="text_style_body_text">
+    <style name="text_style_yellow_body_text">
         <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/custom_black</item>
+        <item name="android:textColor">@color/yellow</item>
         <item name="android:fontFamily">@font/font_roboto_regular</item>
     </style>
 
