@@ -4,6 +4,7 @@ import com.example.uberdrive.data.model.AddDriverRequest
 import com.example.uberdrive.data.model.AddDriverResponse
 import com.example.uberdrive.data.model.AddVehicleRequest
 import com.example.uberdrive.data.model.AddVehicleResponse
+import com.example.uberdrive.data.model.DeclineTripRequestResponse
 import com.example.uberdrive.data.model.GetTripDetailsResponse
 import com.example.uberdrive.data.model.UpdateVehicleRequest
 import com.example.uberdrive.data.model.UpdateVehicleResponse
@@ -30,6 +31,9 @@ interface ApiService {
 
     @GET("get_trip_request")
     suspend fun getTripDetails(@Query("cars_id") carId: Int): Response<GetTripDetailsResponse>
+
+    @POST("trip/{trip_id}")
+    suspend fun declineTripRequest(@Path("trip_id") tripId: Int): Response<DeclineTripRequestResponse>
 
 
 

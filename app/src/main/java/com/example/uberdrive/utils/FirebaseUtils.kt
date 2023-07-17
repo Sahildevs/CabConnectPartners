@@ -52,6 +52,7 @@ class FirebaseUtils {
     }
 
 
+    //Update the ride request status accept/reject
     fun updateRideRequestStatus(driverId: String, map: Map<String, String>) {
         db.collection("Ride Requests")
             .document(driverId)

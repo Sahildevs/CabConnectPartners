@@ -197,6 +197,13 @@ class LandingBaseActivity : AppCompatActivity(), RideRequestBottomSheet.Callback
         }
     }
 
+    /** Service call */
+    private fun declineTripRequest() {
+        lifecycleScope.launch {
+            landingViewModel.declineTripRequest()
+        }
+    }
+
 
 
     private fun serviceObserver() {
@@ -254,6 +261,12 @@ class LandingBaseActivity : AppCompatActivity(), RideRequestBottomSheet.Callback
                 getDropAddressFromLatLng(result)
 
                 showRideRequestBottomSheet()
+            }
+        })
+
+        landingViewModel.responseDeclineTripRequestServiceCall.observe(this, Observer { result ->
+            if (result!= null) {
+                Toast.makeText(this, "Request Denied", Toast.LENGTH_SHORT).show()
             }
         })
 
@@ -324,6 +337,7 @@ class LandingBaseActivity : AppCompatActivity(), RideRequestBottomSheet.Callback
     //Trip request rejected by the driver
     override fun onClickRejectTripRequest() {
         landingViewModel.updateRideRequestStatus("REJECTED")
+        declineTripRequest()
         rideRequestBottomSheet.dismiss()
     }
 

@@ -3,6 +3,7 @@ package com.example.uberdrive.ui.landing
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.uberdrive.data.model.DeclineTripRequestResponse
 import com.example.uberdrive.data.model.GetTripDetailsResponse
 import com.example.uberdrive.data.model.LocationData
 import com.example.uberdrive.data.model.UpdateVehicleRequest
@@ -59,6 +60,9 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
     private var _responseGetTripDetailsServiceCall = MutableLiveData<Response<GetTripDetailsResponse>>()
     val responseGetTripDetailsServiceCall: LiveData<Response<GetTripDetailsResponse>> = _responseGetTripDetailsServiceCall
 
+    private var _responseDeclineTripRequestServiceCall = MutableLiveData<Response<DeclineTripRequestResponse>>()
+    val responseDeclineTripRequestServiceCall: LiveData<Response<DeclineTripRequestResponse>> = _responseDeclineTripRequestServiceCall
+
 
 
     /** Add active driver firebase service call */
@@ -111,6 +115,18 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
 
     }
 
+    /** Update requested trip request status firebase service call */
+    fun updateRideRequestStatus(status: String) {
+        val map = mutableMapOf<String, String>()
+        map["status"] = status
+
+        firebaseUtils.updateRideRequestStatus(
+            driverId = driverId.toString(),
+            map = map
+        )
+    }
+
+
     /** Update vehicle details service call */
     suspend fun updateVehicleServiceCall(status: VehicleStatus) {
         val request = UpdateVehicleRequest(
@@ -124,6 +140,7 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
 
     }
 
+    /** Get requested trip details service call */
     suspend fun getTripDetails() {
         val request = vehicleId!!
 
@@ -131,15 +148,14 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
         _responseGetTripDetailsServiceCall.postValue(res)
     }
 
-    /** Update trip request request status firebase service call */
-    fun updateRideRequestStatus(status: String) {
-        val map = mutableMapOf<String, String>()
-        map["status"] = status
+    /** Decline trip request service call */
+    suspend fun declineTripRequest() {
+        val request = tripId!!
 
-        firebaseUtils.updateRideRequestStatus(
-            driverId = driverId.toString(),
-            map = map
-        )
+        val res = repository.declineTripRequest(request)
+        _responseDeclineTripRequestServiceCall.postValue(res)
     }
+
+
 
 }
