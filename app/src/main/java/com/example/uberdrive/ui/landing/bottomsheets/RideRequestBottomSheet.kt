@@ -14,7 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class RideRequestBottomSheet : BottomSheetDialogFragment() {
+class RideRequestBottomSheet(private val callback: Callback) : BottomSheetDialogFragment() {
 
     lateinit var binding: BottomSheetRideRequestBinding
 
@@ -45,7 +45,18 @@ class RideRequestBottomSheet : BottomSheetDialogFragment() {
 
     private fun onClick() {
 
-        binding.btnDecline.setOnClickListener { this.dismiss() }
+        binding.btnAccept.setOnClickListener {
+            callback.onClickAcceptTripRequest()
+        }
+
+        binding.btnDecline.setOnClickListener {
+            callback.onClickRejectTripRequest()
+        }
+    }
+
+    interface Callback {
+        fun onClickAcceptTripRequest()
+        fun onClickRejectTripRequest()
     }
 
 }

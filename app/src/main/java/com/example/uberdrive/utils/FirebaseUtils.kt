@@ -44,10 +44,17 @@ class FirebaseUtils {
         // means the listener will receive updates whenever there are changes to the specified document.
 
         return documentRef.addSnapshotListener { documentSnapshot, error ->
-            if (documentSnapshot != null && documentSnapshot.exists()) {
+            if (documentSnapshot != null && documentSnapshot.exists() && documentSnapshot["status"] == "REQUESTED") {
                 onSuccess("requested")
             }
         }
 
+    }
+
+
+    fun updateRideRequestStatus(driverId: String, map: Map<String, String>) {
+        db.collection("Ride Requests")
+            .document(driverId)
+            .update(map)
     }
 }

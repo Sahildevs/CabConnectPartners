@@ -40,6 +40,7 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
     var dropLng: Double? = null
     var dropAddress: String? = null
 
+    var isRideRequestBottomSheetVisible: Boolean = false
 
 
 
@@ -128,6 +129,17 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
 
         val res = repository.getTripDetails(request)
         _responseGetTripDetailsServiceCall.postValue(res)
+    }
+
+    /** Update trip request request status firebase service call */
+    fun updateRideRequestStatus(status: String) {
+        val map = mutableMapOf<String, String>()
+        map["status"] = status
+
+        firebaseUtils.updateRideRequestStatus(
+            driverId = driverId.toString(),
+            map = map
+        )
     }
 
 }

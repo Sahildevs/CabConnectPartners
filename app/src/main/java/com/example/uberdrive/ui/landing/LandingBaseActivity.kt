@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 
 @AndroidEntryPoint
-class LandingBaseActivity : AppCompatActivity() {
+class LandingBaseActivity : AppCompatActivity(), RideRequestBottomSheet.Callback {
 
     lateinit var binding: ActivityLandingBaseBinding
 
@@ -261,7 +261,7 @@ class LandingBaseActivity : AppCompatActivity() {
 
 
     private fun showRideRequestBottomSheet() {
-        rideRequestBottomSheet = RideRequestBottomSheet()
+        rideRequestBottomSheet = RideRequestBottomSheet(this)
         rideRequestBottomSheet.show(supportFragmentManager, null)
         rideRequestBottomSheet.isCancelable = false
     }
@@ -301,7 +301,7 @@ class LandingBaseActivity : AppCompatActivity() {
             driverId = landingViewModel.driverId.toString(),
             onSuccess = {
                 //Ride requested
-                Toast.makeText(this, "You got a ride request", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this, "You got a ride request", Toast.LENGTH_SHORT).show()
                 getTripDetails()
 
             },
@@ -316,6 +316,18 @@ class LandingBaseActivity : AppCompatActivity() {
 
 
 
+    //Trip request accepted by the driver
+    override fun onClickAcceptTripRequest() {
+        landingViewModel.updateRideRequestStatus("ACCEPTED")
+    }
+
+    //Trip request rejected by the driver
+    override fun onClickRejectTripRequest() {
+        landingViewModel.updateRideRequestStatus("REJECTED")
+        rideRequestBottomSheet.dismiss()
+    }
+
+
     override fun onBackPressed() {
         super.onBackPressed()
 
@@ -328,4 +340,6 @@ class LandingBaseActivity : AppCompatActivity() {
         backPressedTime = System.currentTimeMillis()
 
     }
+
+
 }
