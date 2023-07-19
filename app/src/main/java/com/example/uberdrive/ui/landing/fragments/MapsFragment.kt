@@ -9,11 +9,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.example.uberdrive.R
+import com.example.uberdrive.data.model.GetTripDetailsResponse
+import com.example.uberdrive.data.model.VehicleStatus
 import com.example.uberdrive.databinding.FragmentMapsBinding
 import com.example.uberdrive.ui.landing.LandingBaseViewModel
+import com.example.uberdrive.ui.landing.bottomsheets.RideRequestBottomSheet
+import com.example.uberdrive.utils.FirebaseUtils
 import com.example.uberdrive.utils.LocationUtils
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -22,23 +29,33 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.firestore.ListenerRegistration
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import retrofit2.Response
 
 @AndroidEntryPoint
-class MapsFragment : Fragment() {
+class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
 
     lateinit var binding: FragmentMapsBinding
 
     private lateinit var locationUtils: LocationUtils
     private lateinit var mMap: GoogleMap
 
-    private val landingBaseViewModel: LandingBaseViewModel by activityViewModels()
+    private lateinit var firebaseUtils: FirebaseUtils
+    private lateinit var listenerRegistration: ListenerRegistration
+
+    private lateinit var rideRequestBottomSheet: RideRequestBottomSheet
+
+    private val landingViewModel: LandingBaseViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         //This class handles all location related operation
         locationUtils = LocationUtils(requireContext())
+
+        firebaseUtils = FirebaseUtils()
     }
 
     override fun onCreateView(
@@ -56,7 +73,197 @@ class MapsFragment : Fragment() {
         //Here we find the map fragment and inflate it, once inflated it calls a callback
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
+
+        serviceObserver()
     }
+
+
+
+    /** Service call */
+    private fun updateVehicle(status: VehicleStatus) {
+        lifecycleScope.launch {
+            landingViewModel.updateVehicleServiceCall(status)
+        }
+    }
+
+    /** Service call */
+    private fun getTripDetails() {
+        lifecycleScope.launch {
+            landingViewModel.getTripDetailsServiceCall()
+        }
+    }
+
+    /** Service call */
+    private fun declineTripRequest() {
+        lifecycleScope.launch {
+            landingViewModel.declineTripRequestServiceCall()
+        }
+    }
+
+    /** Service call */
+    private fun acceptTripRequest() {
+        lifecycleScope.launch {
+            landingViewModel.acceptTripRequestServiceCall()
+        }
+    }
+
+
+
+    private fun serviceObserver() {
+
+        landingViewModel.responseGoLive.observe(viewLifecycleOwner, Observer { result ->
+            if (result.isNotEmpty()) {
+                when (result) {
+                    "success" -> {
+                        Toast.makeText(requireContext(), "You are live", Toast.LENGTH_SHORT).show()
+
+                        updateVehicle(VehicleStatus.AVAILABLE)  //Update vehicle status in the db
+                        startListeningRideRequests()            //Start listening to incoming ride requests
+                    }
+
+                    "failed" -> Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+
+        landingViewModel.responseGoOffline.observe(viewLifecycleOwner, Observer { result ->
+            if (result.isNotEmpty()) {
+                when (result) {
+                    "success" -> {
+                        Toast.makeText(requireContext(), "You are offline", Toast.LENGTH_SHORT).show()
+
+                        updateVehicle(VehicleStatus.BUSY)              //Update vehicle status in the db
+                        stopListeningRideRequest()
+
+                    }
+
+                    "failed" -> Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+
+        landingViewModel.responseUpdateVehicleServiceCall.observe(viewLifecycleOwner, Observer { result ->
+            if (result.isSuccessful) {
+                Toast.makeText(requireContext(), "Car Status ${result.body()?.state}", Toast.LENGTH_SHORT).show()
+
+            }
+        })
+
+        landingViewModel.responseGetTripDetailsServiceCall.observe(viewLifecycleOwner, Observer { result ->
+            if (result!= null) {
+
+                landingViewModel.tripId = result.body()?.id
+                landingViewModel.pickUpLat = result.body()?.pickUpLocation?.data?.lat
+                landingViewModel.pickUpLng = result.body()?.pickUpLocation?.data?.lng
+                landingViewModel.dropLat = result.body()?.dropLocation?.data?.lat
+                landingViewModel.dropLng = result.body()?.dropLocation?.data?.lng
+                landingViewModel.customerName = result.body()?.riderDetails?.name
+                landingViewModel.customerPhone = result.body()?.riderDetails?.phone
+
+                //Converts location points to readable address
+                getPickupAddressFromLatLng(result)
+                getDropAddressFromLatLng(result)
+
+                showRideRequestBottomSheet()
+            }
+        })
+
+        landingViewModel.responseDeclineTripRequestServiceCall.observe(viewLifecycleOwner, Observer { result ->
+            if (result!= null) {
+                Toast.makeText(requireContext(), "Request Denied", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        landingViewModel.responseAcceptTripRequestServiceCall.observe(viewLifecycleOwner, Observer { result ->
+            if (result != null) {
+                Toast.makeText(requireContext(), result.body()?.state, Toast.LENGTH_SHORT).show()
+            }
+        })
+
+    }
+
+
+    private fun showRideRequestBottomSheet() {
+        rideRequestBottomSheet = RideRequestBottomSheet(this)
+        rideRequestBottomSheet.show(childFragmentManager, null)
+        rideRequestBottomSheet.isCancelable = false
+    }
+
+    //Retrieves pickup address from lat lng and store it in the view-model
+    private fun getPickupAddressFromLatLng(result: Response<GetTripDetailsResponse>) {
+
+        // Execute the geocoding operation on the coroutine
+        lifecycleScope.launch {
+            landingViewModel.pickUpAddress = locationUtils
+                .getAddressFromLatLng(
+                    lat = result.body()?.pickUpLocation?.data?.lat!!,
+                    lng = result.body()?.pickUpLocation?.data?.lng!!
+                )
+        }
+
+    }
+
+    //Retrieves drop address from lat lng and store it in the view-model
+    private fun getDropAddressFromLatLng(result: Response<GetTripDetailsResponse>) {
+
+        // Execute the geocoding operation on the coroutine
+        lifecycleScope.launch {
+            landingViewModel.dropAddress = locationUtils
+                .getAddressFromLatLng(
+                    lat = result.body()?.dropLocation?.data?.lat!!,
+                    lng = result.body()?.dropLocation?.data?.lng!!
+                )
+        }
+    }
+
+
+
+    //Listening to incoming ride request,
+    private fun startListeningRideRequests() {
+        listenerRegistration = firebaseUtils.getRideRequest(
+            driverId = landingViewModel.driverId.toString(),
+            onSuccess = {
+                //Ride requested
+                //Toast.makeText(this, "You got a ride request", Toast.LENGTH_SHORT).show()
+                getTripDetails()
+
+            },
+            onFailure = {}
+        )
+    }
+
+
+    //Stops listening to incoming ride requests
+    private fun stopListeningRideRequest() {
+        listenerRegistration.remove()
+    }
+
+    private fun showPickupRoute() {
+
+        val latLng = LatLng(landingViewModel.pickUpLat!!, landingViewModel.pickUpLng!!)
+        mMap.addMarker(MarkerOptions().position(latLng).title("PickUp"))
+    }
+
+
+
+    //Trip request accepted by the driver
+    override fun onClickAcceptTripRequest() {
+        landingViewModel.updateRideRequestStatus("ACCEPTED")
+        acceptTripRequest()
+        rideRequestBottomSheet.dismiss()
+        updateVehicle(VehicleStatus.BUSY)
+        showPickupRoute()
+    }
+
+    //Trip request rejected by the driver
+    override fun onClickRejectTripRequest() {
+        landingViewModel.updateRideRequestStatus("REJECTED")
+        declineTripRequest()
+        rideRequestBottomSheet.dismiss()
+        updateVehicle(VehicleStatus.AVAILABLE)
+    }
+
+
 
 
 
@@ -128,12 +335,12 @@ class MapsFragment : Fragment() {
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18f))
 
                 //Store updated location to view model
-                landingBaseViewModel.currentLat = location.latitude
-                landingBaseViewModel.currentLng = location.longitude
+                landingViewModel.currentLat = location.latitude
+                landingViewModel.currentLng = location.longitude
 
                 //Update the vehicle location in firestore only if the driver is live
-                if (landingBaseViewModel.isLive) {
-                    landingBaseViewModel.updateActiveDriverData()
+                if (landingViewModel.isLive) {
+                    landingViewModel.updateActiveDriverData()
                 }
 
 
@@ -147,10 +354,6 @@ class MapsFragment : Fragment() {
     private fun stopLocationUpdates() {
         locationUtils.stopLocationUpdates()
     }
-
-
-
-
 
 
 
