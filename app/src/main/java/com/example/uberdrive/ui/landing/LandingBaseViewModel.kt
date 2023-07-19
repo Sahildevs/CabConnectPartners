@@ -3,7 +3,7 @@ package com.example.uberdrive.ui.landing
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.uberdrive.data.model.DeclineTripRequestResponse
+import com.example.uberdrive.data.model.RespondToTripRequestResponse
 import com.example.uberdrive.data.model.GetTripDetailsResponse
 import com.example.uberdrive.data.model.LocationData
 import com.example.uberdrive.data.model.UpdateVehicleRequest
@@ -41,8 +41,6 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
     var dropLng: Double? = null
     var dropAddress: String? = null
 
-    var isRideRequestBottomSheetVisible: Boolean = false
-
 
 
     var isLive: Boolean = false
@@ -60,9 +58,12 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
     private var _responseGetTripDetailsServiceCall = MutableLiveData<Response<GetTripDetailsResponse>>()
     val responseGetTripDetailsServiceCall: LiveData<Response<GetTripDetailsResponse>> = _responseGetTripDetailsServiceCall
 
-    private var _responseDeclineTripRequestServiceCall = MutableLiveData<Response<DeclineTripRequestResponse>>()
-    val responseDeclineTripRequestServiceCall: LiveData<Response<DeclineTripRequestResponse>> = _responseDeclineTripRequestServiceCall
+    private var _responseDeclineTripRequestServiceCall = MutableLiveData<Response<RespondToTripRequestResponse>>()
+    val responseDeclineTripRequestServiceCall: LiveData<Response<RespondToTripRequestResponse>> = _responseDeclineTripRequestServiceCall
 
+
+    private var _responseAcceptTripRequestServiceCall = MutableLiveData<Response<RespondToTripRequestResponse>>()
+    val responseAcceptTripRequestServiceCall: LiveData<Response<RespondToTripRequestResponse>> = _responseAcceptTripRequestServiceCall
 
 
     /** Add active driver firebase service call */
@@ -141,21 +142,30 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
     }
 
     /** Get requested trip details service call */
-    suspend fun getTripDetails() {
+    suspend fun getTripDetailsServiceCall() {
         val request = vehicleId!!
 
         val res = repository.getTripDetails(request)
         _responseGetTripDetailsServiceCall.postValue(res)
+
     }
 
     /** Decline trip request service call */
-    suspend fun declineTripRequest() {
+    suspend fun declineTripRequestServiceCall() {
         val request = tripId!!
 
         val res = repository.declineTripRequest(request)
         _responseDeclineTripRequestServiceCall.postValue(res)
+
     }
 
 
+    suspend fun acceptTripRequestServiceCall() {
+        val request = tripId!!
+
+        val res = repository.acceptTripRequest(request)
+        _responseAcceptTripRequestServiceCall.postValue(res)
+
+    }
 
 }

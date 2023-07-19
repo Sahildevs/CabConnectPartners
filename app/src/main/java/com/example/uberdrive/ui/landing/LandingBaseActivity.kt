@@ -193,14 +193,21 @@ class LandingBaseActivity : AppCompatActivity(), RideRequestBottomSheet.Callback
     /** Service call */
     private fun getTripDetails() {
         lifecycleScope.launch {
-            landingViewModel.getTripDetails()
+            landingViewModel.getTripDetailsServiceCall()
         }
     }
 
     /** Service call */
     private fun declineTripRequest() {
         lifecycleScope.launch {
-            landingViewModel.declineTripRequest()
+            landingViewModel.declineTripRequestServiceCall()
+        }
+    }
+
+    /** Service call */
+    private fun acceptTripRequest() {
+        lifecycleScope.launch {
+            landingViewModel.acceptTripRequestServiceCall()
         }
     }
 
@@ -257,6 +264,7 @@ class LandingBaseActivity : AppCompatActivity(), RideRequestBottomSheet.Callback
                 landingViewModel.customerName = result.body()?.riderDetails?.name
                 landingViewModel.customerPhone = result.body()?.riderDetails?.phone
 
+                //Converts location points to readable address
                 getPickupAddressFromLatLng(result)
                 getDropAddressFromLatLng(result)
 
@@ -267,6 +275,12 @@ class LandingBaseActivity : AppCompatActivity(), RideRequestBottomSheet.Callback
         landingViewModel.responseDeclineTripRequestServiceCall.observe(this, Observer { result ->
             if (result!= null) {
                 Toast.makeText(this, "Request Denied", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        landingViewModel.responseAcceptTripRequestServiceCall.observe(this, Observer { result ->
+            if (result != null) {
+                Toast.makeText(this, result.body()?.state, Toast.LENGTH_SHORT).show()
             }
         })
 
@@ -332,6 +346,8 @@ class LandingBaseActivity : AppCompatActivity(), RideRequestBottomSheet.Callback
     //Trip request accepted by the driver
     override fun onClickAcceptTripRequest() {
         landingViewModel.updateRideRequestStatus("ACCEPTED")
+        acceptTripRequest()
+        rideRequestBottomSheet.dismiss()
     }
 
     //Trip request rejected by the driver

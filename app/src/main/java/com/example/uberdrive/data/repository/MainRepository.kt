@@ -5,7 +5,7 @@ import com.example.uberdrive.data.model.AddDriverRequest
 import com.example.uberdrive.data.model.AddDriverResponse
 import com.example.uberdrive.data.model.AddVehicleRequest
 import com.example.uberdrive.data.model.AddVehicleResponse
-import com.example.uberdrive.data.model.DeclineTripRequestResponse
+import com.example.uberdrive.data.model.RespondToTripRequestResponse
 import com.example.uberdrive.data.model.GetTripDetailsResponse
 import com.example.uberdrive.data.model.UpdateVehicleRequest
 import com.example.uberdrive.data.model.UpdateVehicleResponse
@@ -31,7 +31,11 @@ class MainRepository @Inject constructor(private val apiService: ApiService) {
         return apiService.getTripDetails(request)
     }
 
-    suspend fun declineTripRequest(request: Int): Response<DeclineTripRequestResponse> {
+    suspend fun declineTripRequest(request: Int): Response<RespondToTripRequestResponse> {
         return apiService.declineTripRequest(request)
+    }
+
+    suspend fun acceptTripRequest(request: Int): Response<RespondToTripRequestResponse> {
+        return apiService.acceptTripRequest(request)
     }
 }
