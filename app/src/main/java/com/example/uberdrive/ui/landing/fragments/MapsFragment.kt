@@ -2,8 +2,10 @@ package com.example.uberdrive.ui.landing.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.location.Location
+import android.net.Uri
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
@@ -113,13 +115,6 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
         }
     }
 
-    private fun onClick() {
-
-        binding.fabRiderDetails.setOnClickListener {
-            showPassengerDetailsBottomSheet()
-        }
-    }
-
 
     private fun serviceObserver() {
 
@@ -194,6 +189,18 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
 
     }
 
+    private fun onClick() {
+
+        binding.fabRiderDetails.setOnClickListener {
+            showPassengerDetailsBottomSheet()
+        }
+
+        binding.fabDirections.setOnClickListener {
+            openGoogleMapsForDirection()
+        }
+
+    }
+
 
     private fun showRideRequestBottomSheet() {
         rideRequestBottomSheet = RideRequestBottomSheet(this)
@@ -264,7 +271,49 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
 
         val latLng = LatLng(landingViewModel.pickUpLat!!, landingViewModel.pickUpLng!!)
         mMap.addMarker(MarkerOptions().position(latLng).title("PickUp").icon(customMarker))
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15f))
     }
+
+
+    //Adds drop location marker on map
+    private fun addDropOffPoint() {
+
+        val iconBitmap = BitmapFactory.decodeResource(resources, R.drawable.drop_marker)
+        val customMarker = BitmapDescriptorFactory.fromBitmap(iconBitmap)
+
+        val latLng = LatLng(landingViewModel.dropLat!!, landingViewModel.dropLng!!)
+        mMap.addMarker(MarkerOptions().position(latLng).title("Drop").icon(customMarker))
+
+
+    }
+
+    //Opens the google maps app for directions to the pickup/drop off location.
+    private fun openGoogleMapsForDirection() {
+
+        val destination = "${landingViewModel.pickUpLat},${landingViewModel.pickUpLng}"
+
+        //This URI is a special URI scheme recognized by the Google Maps app for navigation purposes
+        val uri = Uri.parse("google.navigation:q=$destination")
+
+        //Intent.ACTION_VIEW: This indicates that the intent is for viewing data.
+        //uri: The URI representing the destination location for navigation.
+        //setPackage(). This ensures that the intent specifically targets the Google Maps app for navigation.
+        val intent = Intent(Intent.ACTION_VIEW, uri).setPackage("com.google.android.apps.maps")
+
+        //we check if there is any activity that can handle the intent.
+        // If there is  Google Maps app installed, we start the activity using startActivity(intent).
+        if (intent.resolveActivity(requireContext().packageManager) != null) {
+            startActivity(intent)
+        }
+        else {
+            Toast.makeText(requireContext(), "Google Maps not installed", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+
+
+
 
 
 
