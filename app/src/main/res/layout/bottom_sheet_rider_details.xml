@@ -26,7 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:text="Ride request."
+                android:text="Passenger Details."
                 style="@style/text_style_subtitle_text" />
 
             <Space
@@ -195,38 +195,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="16dp" />
 
-            <LinearLayout
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_hide_details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="16dp"
-                android:orientation="horizontal">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_decline"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:backgroundTint="@color/white"
-                    android:text="decline"
-                    android:enabled="true"
-                    style="@style/button_style_small_button" />
-
-                <Space
-                    android:layout_width="16dp"
-                    android:layout_height="0dp"
-                    android:layout_gravity="center_vertical"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_accept"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:backgroundTint="@color/yellow"
-                    android:text="accept"
-                    android:enabled="true"
-                    style="@style/button_style_small_button" />
-
-            </LinearLayout>
+                android:layout_weight="1"
+                app:backgroundTint="@color/yellow"
+                android:text="hide details"
+                android:enabled="true"
+                style="@style/button_style_default_button" />
 
         </LinearLayout>
 

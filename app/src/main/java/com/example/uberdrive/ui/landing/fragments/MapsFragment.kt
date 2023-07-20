@@ -2,6 +2,7 @@ package com.example.uberdrive.ui.landing.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.graphics.BitmapFactory
 import android.location.Location
 import androidx.fragment.app.Fragment
 
@@ -11,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -20,6 +22,7 @@ import com.example.uberdrive.data.model.VehicleStatus
 import com.example.uberdrive.databinding.FragmentMapsBinding
 import com.example.uberdrive.ui.landing.LandingBaseViewModel
 import com.example.uberdrive.ui.landing.bottomsheets.RideRequestBottomSheet
+import com.example.uberdrive.ui.landing.bottomsheets.RiderDetailsBottomSheet
 import com.example.uberdrive.utils.FirebaseUtils
 import com.example.uberdrive.utils.LocationUtils
 
@@ -27,6 +30,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.firestore.ListenerRegistration
@@ -46,6 +50,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
     private lateinit var listenerRegistration: ListenerRegistration
 
     private lateinit var rideRequestBottomSheet: RideRequestBottomSheet
+    private lateinit var riderDetailsBottomSheet: RiderDetailsBottomSheet
 
     private val landingViewModel: LandingBaseViewModel by activityViewModels()
 
@@ -75,6 +80,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
         mapFragment?.getMapAsync(callback)
 
         serviceObserver()
+        onClick()
     }
 
 
@@ -107,6 +113,12 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
         }
     }
 
+    private fun onClick() {
+
+        binding.fabRiderDetails.setOnClickListener {
+            showPassengerDetailsBottomSheet()
+        }
+    }
 
 
     private fun serviceObserver() {
@@ -189,6 +201,12 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
         rideRequestBottomSheet.isCancelable = false
     }
 
+    private fun showPassengerDetailsBottomSheet() {
+        riderDetailsBottomSheet = RiderDetailsBottomSheet()
+        riderDetailsBottomSheet.show(childFragmentManager, null)
+        riderDetailsBottomSheet.isCancelable = false
+    }
+
     //Retrieves pickup address from lat lng and store it in the view-model
     private fun getPickupAddressFromLatLng(result: Response<GetTripDetailsResponse>) {
 
@@ -238,10 +256,14 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
         listenerRegistration.remove()
     }
 
-    private fun showPickupRoute() {
+    //Adds pickup location marker on map
+    private fun addPickupPoint() {
+
+        val iconBitmap = BitmapFactory.decodeResource(resources, R.drawable.pickup_marker)
+        val customMarker = BitmapDescriptorFactory.fromBitmap(iconBitmap)
 
         val latLng = LatLng(landingViewModel.pickUpLat!!, landingViewModel.pickUpLng!!)
-        mMap.addMarker(MarkerOptions().position(latLng).title("PickUp"))
+        mMap.addMarker(MarkerOptions().position(latLng).title("PickUp").icon(customMarker))
     }
 
 
@@ -251,8 +273,9 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
         landingViewModel.updateRideRequestStatus("ACCEPTED")
         acceptTripRequest()
         rideRequestBottomSheet.dismiss()
+        binding.layoutActions.isVisible = true
         updateVehicle(VehicleStatus.BUSY)
-        showPickupRoute()
+        addPickupPoint()
     }
 
     //Trip request rejected by the driver
@@ -332,7 +355,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
                 //Handle location updates
 
                 val latLng = LatLng(location.latitude, location.longitude)
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18f))
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
 
                 //Store updated location to view model
                 landingViewModel.currentLat = location.latitude
