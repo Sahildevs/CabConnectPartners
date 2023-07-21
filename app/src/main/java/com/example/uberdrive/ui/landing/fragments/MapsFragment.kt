@@ -36,6 +36,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.firestore.ListenerRegistration
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,12 +44,15 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 
 @AndroidEntryPoint
-class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
+class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBottomSheet.Callback {
 
     lateinit var binding: FragmentMapsBinding
 
     private lateinit var locationUtils: LocationUtils
     private lateinit var mMap: GoogleMap
+
+    private var pickupMarker: Marker? = null
+    private var dropMarker: Marker? = null
 
     private lateinit var firebaseUtils: FirebaseUtils
     private lateinit var listenerRegistration: ListenerRegistration
@@ -146,7 +150,6 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
                         stopListeningRideRequest()
 
                     }
-
                     "failed" -> Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -220,7 +223,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
     }
 
     private fun showPickupPointReachedBottomSheet() {
-        startTripBottomSheet = StartTripBottomSheet()
+        startTripBottomSheet = StartTripBottomSheet(this)
         startTripBottomSheet.show(childFragmentManager, null)
         startTripBottomSheet.isCancelable = false
     }
@@ -284,8 +287,9 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
         val customMarker = BitmapDescriptorFactory.fromBitmap(iconBitmap)
 
         val latLng = LatLng(landingViewModel.pickUpLat!!, landingViewModel.pickUpLng!!)
-        mMap.addMarker(MarkerOptions().position(latLng).title("PickUp").icon(customMarker))
+        pickupMarker = mMap.addMarker(MarkerOptions().position(latLng).title("PickUp").icon(customMarker))
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15f))
+
     }
 
 
@@ -296,15 +300,22 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
         val customMarker = BitmapDescriptorFactory.fromBitmap(iconBitmap)
 
         val latLng = LatLng(landingViewModel.dropLat!!, landingViewModel.dropLng!!)
-        mMap.addMarker(MarkerOptions().position(latLng).title("Drop").icon(customMarker))
-
+        dropMarker = mMap.addMarker(MarkerOptions().position(latLng).title("Drop").icon(customMarker))
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15f))
 
     }
 
     //Opens the google maps app for directions to the pickup/drop off location.
     private fun openGoogleMapsForDirection() {
 
-        val destination = "${landingViewModel.pickUpLat},${landingViewModel.pickUpLng}"
+        val destination = if (landingViewModel.isCabArrivedAtPickup) {
+            //Destination is drop location
+            "${landingViewModel.dropLat},${landingViewModel.dropLng}"
+        }
+        else {
+            //Destination id pickup location
+            "${landingViewModel.pickUpLat},${landingViewModel.pickUpLng}"
+        }
 
         //This URI is a special URI scheme recognized by the Google Maps app for navigation purposes
         val uri = Uri.parse("google.navigation:q=$destination")
@@ -338,7 +349,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
         Log.d("ARRIVED", "Arrived-------- $hasArrived")
 
         if (hasArrived) {
-            landingViewModel.isCabArrived = true
+            landingViewModel.isCabArrivedAtPickup = true
             showPickupPointReachedBottomSheet()
         }
 
@@ -371,6 +382,17 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
 
 
 
+    //Start trip towards the drop location
+    override fun startTrip() {
+        pickupMarker?.remove()
+        startTripBottomSheet.dismiss()
+        addDropOffPoint()
+    }
+
+
+    override fun makePhoneCall() {
+        TODO("Not yet implemented")
+    }
 
 
 
@@ -450,7 +472,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
                 }
 
                 //If trip request is accepted
-                if (landingViewModel.isRequestAccepted && !landingViewModel.isCabArrived) {
+                if (landingViewModel.isRequestAccepted && !landingViewModel.isCabArrivedAtPickup) {
                     //Toast.makeText(requireContext(), "Check Distance", Toast.LENGTH_SHORT).show()
                     //Check if the cab has reached at the requested location, pickup/drop
                     hasCabArrived()
@@ -485,6 +507,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
                 // You can show a message or take appropriate action here
             }
         }
+
 
 
 

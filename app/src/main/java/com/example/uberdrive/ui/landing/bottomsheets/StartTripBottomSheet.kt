@@ -10,7 +10,7 @@ import com.example.uberdrive.databinding.BottomSheetStartTripBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 
-class StartTripBottomSheet : BottomSheetDialogFragment() {
+class StartTripBottomSheet(private val callback: Callback) : BottomSheetDialogFragment() {
 
     lateinit var binding: BottomSheetStartTripBinding
 
@@ -32,9 +32,24 @@ class StartTripBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        onClick()
+    }
 
+    private fun onClick() {
+
+        binding.btnStartTrip.setOnClickListener {
+            callback.startTrip()
+        }
+
+        binding.btnCall.setOnClickListener {
+            callback.makePhoneCall()
+        }
     }
 
 
+    interface Callback{
+        fun startTrip()
+        fun makePhoneCall()
+    }
 
 }

@@ -11,7 +11,6 @@ import com.example.uberdrive.data.model.UpdateVehicleResponse
 import com.example.uberdrive.data.model.VehicleStatus
 import com.example.uberdrive.data.repository.MainRepository
 import com.example.uberdrive.utils.FirebaseUtils
-import com.example.uberdrive.utils.LocationUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Response
 import javax.inject.Inject
@@ -44,7 +43,7 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
 
     var isLive: Boolean = false
     var isRequestAccepted: Boolean = false
-    var isCabArrived: Boolean = false
+    var isCabArrivedAtPickup: Boolean = false
 
     private val firebaseUtils = FirebaseUtils()
 
