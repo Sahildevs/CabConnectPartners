@@ -33,7 +33,6 @@ class LandingBaseActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 
     private lateinit var firebaseUtils: FirebaseUtils
-    private lateinit var locationUtils: LocationUtils
 
 
     //ACCESSING VIEWS FROM LAYOUT
@@ -64,8 +63,6 @@ class LandingBaseActivity : AppCompatActivity() {
         //Initialising the firebase utils class
         firebaseUtils = FirebaseUtils()
 
-        //Initialising the location utils class
-        locationUtils = LocationUtils(this)
 
         //Customized status bar
         window.statusBarColor = ContextCompat.getColor(this, R.color.black)

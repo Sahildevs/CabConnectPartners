@@ -11,6 +11,7 @@ import com.example.uberdrive.data.model.UpdateVehicleResponse
 import com.example.uberdrive.data.model.VehicleStatus
 import com.example.uberdrive.data.repository.MainRepository
 import com.example.uberdrive.utils.FirebaseUtils
+import com.example.uberdrive.utils.LocationUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Response
 import javax.inject.Inject
@@ -41,9 +42,10 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
     var dropLng: Double? = null
     var dropAddress: String? = null
 
-
-
     var isLive: Boolean = false
+    var isRequestAccepted: Boolean = false
+    var isCabArrived: Boolean = false
+
     private val firebaseUtils = FirebaseUtils()
 
     private var _responseGoLive = MutableLiveData<String>()
@@ -64,6 +66,54 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
 
     private var _responseAcceptTripRequestServiceCall = MutableLiveData<Response<RespondToTripRequestResponse>>()
     val responseAcceptTripRequestServiceCall: LiveData<Response<RespondToTripRequestResponse>> = _responseAcceptTripRequestServiceCall
+
+
+
+
+    /** Update vehicle details service call */
+    suspend fun updateVehicleServiceCall(status: VehicleStatus) {
+        val request = UpdateVehicleRequest(
+            cars_id = vehicleId,
+            location = LocationData(lat = currentLat, lng = currentLng),
+            state = status
+        )
+
+        val res = repository.updateVehicle(vehicleId!!, request)
+        _responseUpdateVehicleServiceCall.postValue(res)
+
+    }
+
+    /** Get requested trip details service call */
+    suspend fun getTripDetailsServiceCall() {
+        val request = vehicleId!!
+
+        val res = repository.getTripDetails(request)
+        _responseGetTripDetailsServiceCall.postValue(res)
+
+    }
+
+    /** Decline trip request service call */
+    suspend fun declineTripRequestServiceCall() {
+        val request = tripId!!
+
+        val res = repository.declineTripRequest(request)
+        _responseDeclineTripRequestServiceCall.postValue(res)
+
+    }
+
+
+    /** Accept trip request service call */
+    suspend fun acceptTripRequestServiceCall() {
+        val request = tripId!!
+
+        val res = repository.acceptTripRequest(request)
+        _responseAcceptTripRequestServiceCall.postValue(res)
+
+    }
+
+
+
+
 
 
     /** Add active driver firebase service call */
@@ -128,44 +178,5 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
     }
 
 
-    /** Update vehicle details service call */
-    suspend fun updateVehicleServiceCall(status: VehicleStatus) {
-        val request = UpdateVehicleRequest(
-            cars_id = vehicleId,
-            location = LocationData(lat = currentLat, lng = currentLng),
-            state = status
-        )
-
-        val res = repository.updateVehicle(vehicleId!!, request)
-        _responseUpdateVehicleServiceCall.postValue(res)
-
-    }
-
-    /** Get requested trip details service call */
-    suspend fun getTripDetailsServiceCall() {
-        val request = vehicleId!!
-
-        val res = repository.getTripDetails(request)
-        _responseGetTripDetailsServiceCall.postValue(res)
-
-    }
-
-    /** Decline trip request service call */
-    suspend fun declineTripRequestServiceCall() {
-        val request = tripId!!
-
-        val res = repository.declineTripRequest(request)
-        _responseDeclineTripRequestServiceCall.postValue(res)
-
-    }
-
-
-    suspend fun acceptTripRequestServiceCall() {
-        val request = tripId!!
-
-        val res = repository.acceptTripRequest(request)
-        _responseAcceptTripRequestServiceCall.postValue(res)
-
-    }
 
 }

@@ -48,7 +48,7 @@
                 android:padding="10dp"
                 android:background="@drawable/bg_edit_text_phone_no"
                 android:hint="Name"
-                android:drawableStart="@drawable/ic_avatar"
+                android:drawableStart="@drawable/ic_person"
                 android:drawablePadding="15dp"
                 android:textColorHint="@color/yellow"
                 android:maxLines="1"

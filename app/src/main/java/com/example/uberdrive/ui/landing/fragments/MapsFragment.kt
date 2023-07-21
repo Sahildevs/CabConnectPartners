@@ -9,6 +9,7 @@ import android.net.Uri
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +26,7 @@ import com.example.uberdrive.databinding.FragmentMapsBinding
 import com.example.uberdrive.ui.landing.LandingBaseViewModel
 import com.example.uberdrive.ui.landing.bottomsheets.RideRequestBottomSheet
 import com.example.uberdrive.ui.landing.bottomsheets.RiderDetailsBottomSheet
+import com.example.uberdrive.ui.landing.bottomsheets.StartTripBottomSheet
 import com.example.uberdrive.utils.FirebaseUtils
 import com.example.uberdrive.utils.LocationUtils
 
@@ -53,6 +55,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
 
     private lateinit var rideRequestBottomSheet: RideRequestBottomSheet
     private lateinit var riderDetailsBottomSheet: RiderDetailsBottomSheet
+    private lateinit var startTripBottomSheet: StartTripBottomSheet
 
     private val landingViewModel: LandingBaseViewModel by activityViewModels()
 
@@ -177,13 +180,15 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
 
         landingViewModel.responseDeclineTripRequestServiceCall.observe(viewLifecycleOwner, Observer { result ->
             if (result!= null) {
-                Toast.makeText(requireContext(), "Request Denied", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(requireContext(), "Request Denied", Toast.LENGTH_SHORT).show()
+                Log.d("State", "${result.body()?.state}")
             }
         })
 
         landingViewModel.responseAcceptTripRequestServiceCall.observe(viewLifecycleOwner, Observer { result ->
             if (result != null) {
-                Toast.makeText(requireContext(), result.body()?.state, Toast.LENGTH_SHORT).show()
+                //Toast.makeText(requireContext(), result.body()?.state, Toast.LENGTH_SHORT).show()
+                Log.d("State", "${result.body()?.state}")
             }
         })
 
@@ -213,6 +218,15 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
         riderDetailsBottomSheet.show(childFragmentManager, null)
         riderDetailsBottomSheet.isCancelable = false
     }
+
+    private fun showPickupPointReachedBottomSheet() {
+        startTripBottomSheet = StartTripBottomSheet()
+        startTripBottomSheet.show(childFragmentManager, null)
+        startTripBottomSheet.isCancelable = false
+    }
+
+
+
 
     //Retrieves pickup address from lat lng and store it in the view-model
     private fun getPickupAddressFromLatLng(result: Response<GetTripDetailsResponse>) {
@@ -311,6 +325,25 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
     }
 
 
+    //Checks if the cab has reached at the requested location, pickup/drop
+    private fun hasCabArrived() {
+
+        val cabLatLng = LatLng(landingViewModel.currentLat!!, landingViewModel.currentLng!!)
+        val requestedLatLng = LatLng(landingViewModel.pickUpLat!!, landingViewModel.pickUpLng!!)
+
+        val hasArrived =  locationUtils.hasCabReachedDestination(
+            cabLocation = cabLatLng,
+            requestedLocation = requestedLatLng,
+        )
+        Log.d("ARRIVED", "Arrived-------- $hasArrived")
+
+        if (hasArrived) {
+            landingViewModel.isCabArrived = true
+            showPickupPointReachedBottomSheet()
+        }
+
+    }
+
 
 
 
@@ -320,6 +353,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
     //Trip request accepted by the driver
     override fun onClickAcceptTripRequest() {
         landingViewModel.updateRideRequestStatus("ACCEPTED")
+        landingViewModel.isRequestAccepted =  true
         acceptTripRequest()
         rideRequestBottomSheet.dismiss()
         binding.layoutActions.isVisible = true
@@ -415,6 +449,12 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback {
                     landingViewModel.updateActiveDriverData()
                 }
 
+                //If trip request is accepted
+                if (landingViewModel.isRequestAccepted && !landingViewModel.isCabArrived) {
+                    //Toast.makeText(requireContext(), "Check Distance", Toast.LENGTH_SHORT).show()
+                    //Check if the cab has reached at the requested location, pickup/drop
+                    hasCabArrived()
+                }
 
             }
         })

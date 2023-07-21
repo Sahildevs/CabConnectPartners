@@ -5,12 +5,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.airbnb.lottie.LottieAnimationView
 import com.example.uberdrive.databinding.BottomSheetStartTripBinding
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 
-class StartTripBottomSheet : Fragment() {
+class StartTripBottomSheet : BottomSheetDialogFragment() {
 
     lateinit var binding: BottomSheetStartTripBinding
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +28,13 @@ class StartTripBottomSheet : Fragment() {
         binding = BottomSheetStartTripBinding.inflate(inflater, container, false)
         return binding.root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
+    }
+
 
 
 }

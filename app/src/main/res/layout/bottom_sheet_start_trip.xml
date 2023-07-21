@@ -4,42 +4,53 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     tools:context=".ui.landing.bottomsheets.StartTripBottomSheet">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/custom_black"
         android:orientation="vertical"
         android:paddingVertical="16dp"
-        android:background="@color/custom_black">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
 
         <TextView
+            style="@style/text_style_subtitle_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:gravity="center"
-            android:text="Pickup Point Reached!!"
-            style="@style/text_style_subtitle_text" />
+            android:text="Pickup Point Reached!!" />
 
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="10dp"/>
+            android:layout_height="5dp" />
 
         <TextView
+            style="@style/text_style_yellow_body_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            android:text="You have reached the pickup point, call or wait for the passenger to arrive, once arrived start the trip."
-            android:textAlignment="center"
-            style="@style/text_style_yellow_body_text" />
+            android:text="Call or wait for the passenger to arrive, and then start the trip."
+            android:textAlignment="center" />
 
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="105dp"/>
+            android:layout_height="10dp" />
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:padding="15dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_handshake"
+            app:tint="@color/yellow" />
 
         <Space
             android:layout_width="match_parent"
@@ -48,7 +59,7 @@
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/yellow"/>
+            android:background="@color/yellow" />
 
         <Space
             android:layout_width="match_parent"
@@ -57,33 +68,33 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="16dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_decline"
+                style="@style/button_style_small_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:backgroundTint="@color/white"
-                android:text="call"
                 android:enabled="true"
-                style="@style/button_style_small_button" />
+                android:text="call"
+                app:backgroundTint="@color/white" />
 
             <Space
                 android:layout_width="16dp"
                 android:layout_height="0dp"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="center_vertical" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_accept"
+                style="@style/button_style_small_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:backgroundTint="@color/yellow"
-                android:text="start trip"
                 android:enabled="true"
-                style="@style/button_style_small_button" />
+                android:text="start trip"
+                app:backgroundTint="@color/yellow" />
 
         </LinearLayout>
 

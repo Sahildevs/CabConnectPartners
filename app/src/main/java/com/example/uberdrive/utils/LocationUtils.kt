@@ -6,8 +6,12 @@ import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.os.Looper
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.SphericalUtil
+import java.io.IOException
 import java.util.Locale
 
 class LocationUtils(private val context: Context) {
@@ -93,33 +97,61 @@ class LocationUtils(private val context: Context) {
 
 
     //Converts latitude and longitude coordinates into a human-readable address using the Geocoding API
-    fun getAddressFromLatLng(lat: Double, lng: Double): String {
+    suspend fun getAddressFromLatLng(lat: Double, lng: Double): String {
 
-        val geocoder = Geocoder(context, Locale.getDefault())
+        try {
+            val geocoder = Geocoder(context, Locale.getDefault())
 
-        //The getFromLocation() method of the Geocoder class is called, passing the latitude, longitude,
-        // and a maximum result value of 1. This retrieves a list of addresses associated with the provided coordinates.
-        val addresses = geocoder.getFromLocation(lat, lng, 1)
+            //The getFromLocation() method of the Geocoder class is called, passing the latitude, longitude,
+            // and a maximum result value of 1. This retrieves a list of addresses associated with the provided coordinates.
+            val addresses = geocoder.getFromLocation(lat, lng, 1)
 
-        if (addresses!!.isNotEmpty()) {
+            return if (addresses!!.isNotEmpty()) {
 
-            //Retrieves the first address from the list
-            val address = addresses[0]
+                //Retrieves the first address from the list
+                val address = addresses[0]
+                address.subLocality
 
-            //StringBuilder is created to concatenate the individual address lines.
-            //val sb = StringBuilder()
+            } else{
+                "Address not found"
+            }
 
-            // Extract individual address lines
-//            for (i in 0..address.) {
-//                sb.append(address.getAddressLine(i)).append(" ")
-//            }
+        }catch (e : IOException) {
 
-            return address.subLocality
-
+            return e.message!!
         }
 
-        return "Address not found"
 
+    }
+
+
+    //Function to calculate the distance between the cab and the pickup/drop location
+    private fun calculateDistance(point1: LatLng, point2: LatLng): Double {
+        val earthRadius = 6371.0 // Earth's radius in kilometers
+
+        val startLatLng = LatLng(point1.latitude, point1.longitude);
+        val endLatLng = LatLng(point2.latitude, point2.longitude)
+        val distance = SphericalUtil.computeDistanceBetween(startLatLng, endLatLng);
+
+        //Returns distance in meters
+        return distance
+
+    }
+
+
+    //Function to check if the cab has arrived/reached at the pickup/drop location
+    fun hasCabReachedDestination(cabLocation:LatLng, requestedLocation:LatLng): Boolean {
+
+        //Define the arrival threshold in kilometers/meters
+        val arrivalThreshold = 2.0 //2 meters
+        val distance = calculateDistance(point1 = cabLocation, point2 = requestedLocation)
+
+        Log.d("ARRIVED", "--------Threshold: $arrivalThreshold")
+        Log.d("ARRIVED", "--------Distance: $distance")
+
+        //Returns true if the calculated distance is equal or less than the reachedThreshold, cab reached
+        //reachedThreshold is the maximum allowed distance for the cab to be considered as arrived
+        return distance <= arrivalThreshold
     }
 
 
