@@ -24,6 +24,7 @@ import com.example.uberdrive.data.model.GetTripDetailsResponse
 import com.example.uberdrive.data.model.VehicleStatus
 import com.example.uberdrive.databinding.FragmentMapsBinding
 import com.example.uberdrive.ui.landing.LandingBaseViewModel
+import com.example.uberdrive.ui.landing.bottomsheets.EndTripBottomSheet
 import com.example.uberdrive.ui.landing.bottomsheets.RideRequestBottomSheet
 import com.example.uberdrive.ui.landing.bottomsheets.RiderDetailsBottomSheet
 import com.example.uberdrive.ui.landing.bottomsheets.StartTripBottomSheet
@@ -44,7 +45,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 
 @AndroidEntryPoint
-class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBottomSheet.Callback {
+class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBottomSheet.Callback, EndTripBottomSheet.Callback {
 
     lateinit var binding: FragmentMapsBinding
 
@@ -60,6 +61,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
     private lateinit var rideRequestBottomSheet: RideRequestBottomSheet
     private lateinit var riderDetailsBottomSheet: RiderDetailsBottomSheet
     private lateinit var startTripBottomSheet: StartTripBottomSheet
+    private lateinit var endTripBottomSheet: EndTripBottomSheet
 
     private val landingViewModel: LandingBaseViewModel by activityViewModels()
 
@@ -228,6 +230,12 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
         startTripBottomSheet.isCancelable = false
     }
 
+    private fun showDropOffPointReachedBottomSheet() {
+        endTripBottomSheet = EndTripBottomSheet(this)
+        endTripBottomSheet.show(childFragmentManager, null)
+        endTripBottomSheet.isCancelable = false
+    }
+
 
 
 
@@ -340,7 +348,15 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
     private fun hasCabArrived() {
 
         val cabLatLng = LatLng(landingViewModel.currentLat!!, landingViewModel.currentLng!!)
-        val requestedLatLng = LatLng(landingViewModel.pickUpLat!!, landingViewModel.pickUpLng!!)
+
+        val requestedLatLng = if (!landingViewModel.isCabArrivedAtPickup) {
+            //If cab is not yet arrived at pickup point
+            LatLng(landingViewModel.pickUpLat!!, landingViewModel.pickUpLng!!)
+        }
+        else {
+            //If cab has arrived at the pickup point
+            LatLng(landingViewModel.dropLat!!, landingViewModel.dropLng!!)
+        }
 
         val hasArrived =  locationUtils.hasCabReachedDestination(
             cabLocation = cabLatLng,
@@ -348,9 +364,18 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
         )
         Log.d("ARRIVED", "Arrived-------- $hasArrived")
 
+
         if (hasArrived) {
-            landingViewModel.isCabArrivedAtPickup = true
-            showPickupPointReachedBottomSheet()
+
+            if (!landingViewModel.isCabArrivedAtPickup) {
+                landingViewModel.isCabArrivedAtPickup = true
+                showPickupPointReachedBottomSheet()
+            }
+            else {
+                landingViewModel.isCabArrivedAtDrop = true
+                showDropOffPointReachedBottomSheet()
+            }
+
         }
 
     }
@@ -391,11 +416,16 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
 
 
     override fun makePhoneCall() {
-        TODO("Not yet implemented")
+
     }
 
 
+    override fun endTrip() {
 
+        dropMarker?.remove()
+        endTripBottomSheet.dismiss()
+
+    }
 
 
 
@@ -472,10 +502,14 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
                 }
 
                 //If trip request is accepted
-                if (landingViewModel.isRequestAccepted && !landingViewModel.isCabArrivedAtPickup) {
+                if (landingViewModel.isRequestAccepted) {
                     //Toast.makeText(requireContext(), "Check Distance", Toast.LENGTH_SHORT).show()
+
                     //Check if the cab has reached at the requested location, pickup/drop
-                    hasCabArrived()
+                    if (!landingViewModel.isCabArrivedAtPickup || !landingViewModel.isCabArrivedAtDrop)
+
+                        //This function well be called until both the flags become true
+                        hasCabArrived()
                 }
 
             }
@@ -507,7 +541,6 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
                 // You can show a message or take appropriate action here
             }
         }
-
 
 
 

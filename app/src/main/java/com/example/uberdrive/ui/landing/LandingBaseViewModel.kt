@@ -44,6 +44,7 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
     var isLive: Boolean = false
     var isRequestAccepted: Boolean = false
     var isCabArrivedAtPickup: Boolean = false
+    var isCabArrivedAtDrop: Boolean = false
 
     private val firebaseUtils = FirebaseUtils()
 

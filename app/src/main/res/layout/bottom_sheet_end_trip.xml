@@ -26,7 +26,7 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="10dp"/>
+            android:layout_height="5dp"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -39,7 +39,15 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="105dp"/>
+            android:layout_height="10dp"/>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/anim_accepted"
+            android:layout_width="105dp"
+            android:layout_height="105dp"
+            android:layout_gravity="center"
+            app:lottie_fileName="flag.json"
+            app:lottie_loop="true" />
 
         <Space
             android:layout_width="match_parent"
@@ -55,7 +63,7 @@
             android:layout_height="16dp" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_accept"
+            android:id="@+id/btn_end_trip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
