@@ -38,6 +38,9 @@ interface ApiService {
     @POST("start_trip/{trip_id}")
     suspend fun acceptTripRequest(@Path("trip_id") tripId: Int): Response<RespondToTripRequestResponse>
 
+    @POST("end_trip/{trip_id}")
+    suspend fun endTrip(@Path("trip_id") tripId: Int): Response<RespondToTripRequestResponse>
+
 
 
 

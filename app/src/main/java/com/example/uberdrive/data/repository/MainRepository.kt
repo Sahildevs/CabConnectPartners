@@ -38,4 +38,8 @@ class MainRepository @Inject constructor(private val apiService: ApiService) {
     suspend fun acceptTripRequest(request: Int): Response<RespondToTripRequestResponse> {
         return apiService.acceptTripRequest(request)
     }
+
+    suspend fun endTrip(request: Int): Response<RespondToTripRequestResponse> {
+        return apiService.endTrip(request)
+    }
 }

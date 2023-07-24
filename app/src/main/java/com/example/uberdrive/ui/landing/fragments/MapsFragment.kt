@@ -124,6 +124,12 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
         }
     }
 
+    /** Service call */
+    private fun endTripServiceCall() {
+        lifecycleScope.launch {
+            landingViewModel.endTripServiceCall()
+        }
+    }
 
     private fun serviceObserver() {
 
@@ -194,6 +200,12 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
             if (result != null) {
                 //Toast.makeText(requireContext(), result.body()?.state, Toast.LENGTH_SHORT).show()
                 Log.d("State", "${result.body()?.state}")
+            }
+        })
+
+        landingViewModel.responseEndTripServiceCall.observe(viewLifecycleOwner, Observer { result ->
+            if (result != null) {
+                Toast.makeText(requireContext(), result.body()?.state, Toast.LENGTH_SHORT).show()
             }
         })
 
@@ -421,8 +433,9 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
 
 
     override fun endTrip() {
-
+        endTripServiceCall()
         dropMarker?.remove()
+        binding.layoutActions.isVisible = false
         endTripBottomSheet.dismiss()
 
     }

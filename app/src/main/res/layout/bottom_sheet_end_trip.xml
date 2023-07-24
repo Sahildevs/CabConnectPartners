@@ -51,7 +51,7 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="10dp" />
+            android:layout_height="16dp" />
 
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"

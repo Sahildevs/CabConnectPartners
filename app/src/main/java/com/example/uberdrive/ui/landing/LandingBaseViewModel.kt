@@ -63,9 +63,11 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
     private var _responseDeclineTripRequestServiceCall = MutableLiveData<Response<RespondToTripRequestResponse>>()
     val responseDeclineTripRequestServiceCall: LiveData<Response<RespondToTripRequestResponse>> = _responseDeclineTripRequestServiceCall
 
-
     private var _responseAcceptTripRequestServiceCall = MutableLiveData<Response<RespondToTripRequestResponse>>()
     val responseAcceptTripRequestServiceCall: LiveData<Response<RespondToTripRequestResponse>> = _responseAcceptTripRequestServiceCall
+
+    private var _responseEndTripServiceCall = MutableLiveData<Response<RespondToTripRequestResponse>>()
+    val responseEndTripServiceCall: LiveData<Response<RespondToTripRequestResponse>> = _responseEndTripServiceCall
 
 
 
@@ -111,6 +113,12 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
 
     }
 
+    /** End trip service call */
+    suspend fun endTripServiceCall() {
+        val request = tripId!!
+
+        var res = repository.endTrip(request)
+    }
 
 
 
