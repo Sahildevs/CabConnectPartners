@@ -11,6 +11,7 @@ import com.example.uberdrive.data.model.UpdateVehicleResponse
 import com.example.uberdrive.data.model.VehicleStatus
 import com.example.uberdrive.data.repository.MainRepository
 import com.example.uberdrive.utils.FirebaseUtils
+import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Response
 import javax.inject.Inject
@@ -42,9 +43,13 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
     var dropAddress: String? = null
 
     var isLive: Boolean = false
+    var isAvailable: Boolean = false
     var isRequestAccepted: Boolean = false
     var isCabArrivedAtPickup: Boolean = false
     var isCabArrivedAtDrop: Boolean = false
+
+    var initialCabLocation: LatLng? = null
+    var currentCabLocation: LatLng? = null
 
     private val firebaseUtils = FirebaseUtils()
 

@@ -155,6 +155,20 @@ class LocationUtils(private val context: Context) {
     }
 
 
+    //Checks the distance difference between the initialLocation & currentLocation
+    fun checkDistanceDifference(initialLocation: LatLng, currentLocation: LatLng): Boolean {
+
+        //Distance threshold, the maximum allowed distance for the cab from its initial location to update its location in the db
+        val distanceDifferenceThreshold = 300.0 // 400 meters
+
+        //Get the distance between initial and current location
+        val distance = SphericalUtil.computeDistanceBetween(initialLocation, currentLocation);
+
+        //Returns true if the distance between both the location comes out to be >= 40 meters
+        return distance >= distanceDifferenceThreshold
+
+    }
+
     interface LocationListenerCallback {
         fun onLocationChanged(location: Location)
     }

@@ -138,6 +138,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
                 when (result) {
                     "success" -> {
                         Toast.makeText(requireContext(), "You are live", Toast.LENGTH_SHORT).show()
+                        landingViewModel.isAvailable = true
 
                         updateVehicleData(VehicleStatus.AVAILABLE)  //Update vehicle status, location in the db
                         startListeningRideRequests()            //Start listening to incoming ride requests
@@ -153,6 +154,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
                 when (result) {
                     "success" -> {
                         Toast.makeText(requireContext(), "You are offline", Toast.LENGTH_SHORT).show()
+                        landingViewModel.isAvailable = false
 
                         updateVehicleData(VehicleStatus.BUSY)              //Update vehicle status in the db
                         stopListeningRideRequest()
@@ -163,12 +165,14 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
             }
         })
 
+
         landingViewModel.responseUpdateVehicleDataServiceCall.observe(viewLifecycleOwner, Observer { result ->
             if (result.isSuccessful) {
                 Toast.makeText(requireContext(), "Car Status : ${result.body()?.state}", Toast.LENGTH_SHORT).show()
 
             }
         })
+
 
         landingViewModel.responseGetTripDetailsServiceCall.observe(viewLifecycleOwner, Observer { result ->
             if (result!= null) {
@@ -402,6 +406,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
         landingViewModel.isRequestAccepted = false
         landingViewModel.isCabArrivedAtPickup = false
         landingViewModel.isCabArrivedAtDrop = false
+        landingViewModel.isAvailable = true
     }
 
 
@@ -412,6 +417,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
     override fun onClickAcceptTripRequest() {
         landingViewModel.updateRideRequestStatus("ACCEPTED")
         landingViewModel.isRequestAccepted =  true
+        landingViewModel.isAvailable = false
         acceptTripRequest()
         rideRequestBottomSheet.dismiss()
         binding.layoutActions.isVisible = true
@@ -513,6 +519,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
                 val latLng = LatLng(location.latitude, location.longitude)
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
 
+
                 //Store updated location to view model
                 landingViewModel.currentLat = location.latitude
                 landingViewModel.currentLng = location.longitude
@@ -533,10 +540,43 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
                         hasCabArrived()
                 }
 
+                checkDistanceDifference(latLng)
+
             }
         })
 
     }
+
+    //Updates cab location in db after cab has moved significantly away from its initial location
+    private fun checkDistanceDifference(latLng: LatLng) {
+
+        //Store initial cab location at the first place
+        if (landingViewModel.initialCabLocation == null) {
+            landingViewModel.initialCabLocation = latLng
+        }
+
+        //Store current cab location every single time
+        landingViewModel.currentCabLocation = latLng
+
+        //Check if difference between initial and current cab location >= defined distance, to update db
+        if (landingViewModel.isLive && landingViewModel.isAvailable) {
+
+            val needsDbUpdate = locationUtils.checkDistanceDifference(
+                initialLocation = landingViewModel.initialCabLocation!!,
+                currentLocation = landingViewModel.currentCabLocation!!
+            )
+
+            if (needsDbUpdate) {
+                //The cab has moved significantly away from its initial location >= 40 meters
+                updateVehicleData(VehicleStatus.AVAILABLE)
+                Toast.makeText(requireContext(), "Cab location updated", Toast.LENGTH_SHORT).show()
+                //Set initial location to current location
+                landingViewModel.initialCabLocation = latLng
+            }
+        }
+
+    }
+
 
 
     //Stop receiving location updates
