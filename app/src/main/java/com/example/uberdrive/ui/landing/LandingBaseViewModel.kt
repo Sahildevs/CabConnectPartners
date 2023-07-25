@@ -55,7 +55,7 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
     val responseGoOffline: LiveData<String> = _responseGoOffline
 
     private var _responseUpdateVehicleServiceCall = MutableLiveData<Response<UpdateVehicleResponse>>()
-    val responseUpdateVehicleServiceCall: LiveData<Response<UpdateVehicleResponse>> = _responseUpdateVehicleServiceCall
+    val responseUpdateVehicleDataServiceCall: LiveData<Response<UpdateVehicleResponse>> = _responseUpdateVehicleServiceCall
 
     private var _responseGetTripDetailsServiceCall = MutableLiveData<Response<GetTripDetailsResponse>>()
     val responseGetTripDetailsServiceCall: LiveData<Response<GetTripDetailsResponse>> = _responseGetTripDetailsServiceCall
@@ -73,7 +73,7 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
 
 
     /** Update vehicle details service call */
-    suspend fun updateVehicleServiceCall(status: VehicleStatus) {
+    suspend fun updateVehicleDataServiceCall(status: VehicleStatus) {
         val request = UpdateVehicleRequest(
             cars_id = vehicleId,
             location = LocationData(lat = currentLat, lng = currentLng),
@@ -117,7 +117,8 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
     suspend fun endTripServiceCall() {
         val request = tripId!!
 
-        var res = repository.endTrip(request)
+        val res = repository.endTrip(request)
+        _responseEndTripServiceCall.postValue(res)
     }
 
 
@@ -162,12 +163,12 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
     }
 
     /** Update active driver lat lng firebase service call */
-    fun updateActiveDriverData() {
+    fun updateActiveDriverLocationData() {
         val map = mutableMapOf<String, String>()
         map["Lat"] = currentLat.toString()
         map["Lng"] = currentLng.toString()
 
-        firebaseUtils.updateActiveDriver(
+        firebaseUtils.updateActiveDriverLocationData(
             driverId = driverId.toString(),
             map = map
         )

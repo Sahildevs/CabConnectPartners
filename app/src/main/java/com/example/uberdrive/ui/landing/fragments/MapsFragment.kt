@@ -97,9 +97,9 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
 
 
     /** Service call */
-    private fun updateVehicle(status: VehicleStatus) {
+    private fun updateVehicleData(status: VehicleStatus) {
         lifecycleScope.launch {
-            landingViewModel.updateVehicleServiceCall(status)
+            landingViewModel.updateVehicleDataServiceCall(status)
         }
     }
 
@@ -139,7 +139,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
                     "success" -> {
                         Toast.makeText(requireContext(), "You are live", Toast.LENGTH_SHORT).show()
 
-                        updateVehicle(VehicleStatus.AVAILABLE)  //Update vehicle status in the db
+                        updateVehicleData(VehicleStatus.AVAILABLE)  //Update vehicle status, location in the db
                         startListeningRideRequests()            //Start listening to incoming ride requests
                     }
 
@@ -154,7 +154,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
                     "success" -> {
                         Toast.makeText(requireContext(), "You are offline", Toast.LENGTH_SHORT).show()
 
-                        updateVehicle(VehicleStatus.BUSY)              //Update vehicle status in the db
+                        updateVehicleData(VehicleStatus.BUSY)              //Update vehicle status in the db
                         stopListeningRideRequest()
 
                     }
@@ -163,9 +163,9 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
             }
         })
 
-        landingViewModel.responseUpdateVehicleServiceCall.observe(viewLifecycleOwner, Observer { result ->
+        landingViewModel.responseUpdateVehicleDataServiceCall.observe(viewLifecycleOwner, Observer { result ->
             if (result.isSuccessful) {
-                Toast.makeText(requireContext(), "Car Status ${result.body()?.state}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Car Status : ${result.body()?.state}", Toast.LENGTH_SHORT).show()
 
             }
         })
@@ -205,7 +205,10 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
 
         landingViewModel.responseEndTripServiceCall.observe(viewLifecycleOwner, Observer { result ->
             if (result != null) {
-                Toast.makeText(requireContext(), result.body()?.state, Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Trip status : ${result.body()?.state}", Toast.LENGTH_SHORT).show()
+
+                //Firestore update
+                landingViewModel.updateRideRequestStatus("COMPLETED")
             }
         })
 
@@ -393,6 +396,13 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
     }
 
 
+    //Reset required member variable values to default
+    private fun resetFlagsToDefault() {
+        binding.layoutActions.isVisible = false
+        landingViewModel.isRequestAccepted = false
+        landingViewModel.isCabArrivedAtPickup = false
+        landingViewModel.isCabArrivedAtDrop = false
+    }
 
 
 
@@ -405,7 +415,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
         acceptTripRequest()
         rideRequestBottomSheet.dismiss()
         binding.layoutActions.isVisible = true
-        updateVehicle(VehicleStatus.BUSY)
+        updateVehicleData(VehicleStatus.BUSY)
         addPickupPoint()
     }
 
@@ -414,10 +424,8 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
         landingViewModel.updateRideRequestStatus("REJECTED")
         declineTripRequest()
         rideRequestBottomSheet.dismiss()
-        updateVehicle(VehicleStatus.AVAILABLE)
+        updateVehicleData(VehicleStatus.AVAILABLE)
     }
-
-
 
     //Start trip towards the drop location
     override fun startTrip() {
@@ -426,16 +434,16 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
         addDropOffPoint()
     }
 
-
     override fun makePhoneCall() {
 
     }
 
-
+    //End the trip
     override fun endTrip() {
         endTripServiceCall()
+        updateVehicleData(VehicleStatus.AVAILABLE)
         dropMarker?.remove()
-        binding.layoutActions.isVisible = false
+        resetFlagsToDefault()
         endTripBottomSheet.dismiss()
 
     }
@@ -511,7 +519,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
 
                 //Update the vehicle location in firestore only if the driver is live
                 if (landingViewModel.isLive) {
-                    landingViewModel.updateActiveDriverData()
+                    landingViewModel.updateActiveDriverLocationData()
                 }
 
                 //If trip request is accepted

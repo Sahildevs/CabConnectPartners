@@ -1,6 +1,5 @@
 package com.example.uberdrive.utils
 
-import android.widget.Toast
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 
@@ -18,8 +17,8 @@ class FirebaseUtils {
 
     }
 
-    //Updates the active driver date
-    fun updateActiveDriver(driverId: String, map: Map<String, String>) {
+    //Updates the active driver location
+    fun updateActiveDriverLocationData(driverId: String, map: Map<String, String>) {
         db.collection("Active Drivers")
             .document(driverId)
             .update(map)

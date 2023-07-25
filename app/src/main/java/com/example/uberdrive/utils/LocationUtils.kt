@@ -53,7 +53,7 @@ class LocationUtils(private val context: Context) {
         locationRequest = LocationRequest()
         locationRequest.interval = 10000 //10sec
         locationRequest.fastestInterval = 5000  //5sec
-        locationRequest.priority = com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
 
         locationCallback = object : LocationCallback() {
@@ -143,7 +143,7 @@ class LocationUtils(private val context: Context) {
     fun hasCabReachedDestination(cabLocation:LatLng, requestedLocation:LatLng): Boolean {
 
         //Define the arrival threshold in kilometers/meters
-        val arrivalThreshold = 2.0 //2 meters
+        val arrivalThreshold = 30.0 // 30 meters
         val distance = calculateDistance(point1 = cabLocation, point2 = requestedLocation)
 
         Log.d("ARRIVED", "--------Threshold: $arrivalThreshold")
