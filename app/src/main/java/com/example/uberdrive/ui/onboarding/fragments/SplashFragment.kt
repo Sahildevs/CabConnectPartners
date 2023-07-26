@@ -9,12 +9,23 @@ import androidx.navigation.fragment.findNavController
 import com.example.uberdrive.R
 import com.example.uberdrive.databinding.ActivityMainBinding
 import com.example.uberdrive.databinding.FragmentSplashBinding
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class SplashFragment : Fragment() {
 
     lateinit var binding: FragmentSplashBinding
+
+    private lateinit var auth: FirebaseAuth
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        //Initialised firebase auth
+        auth = FirebaseAuth.getInstance()
+    }
 
 
     override fun onCreateView(
@@ -30,9 +41,18 @@ class SplashFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnGetStart.setOnClickListener {
-            findNavController().navigate(R.id.action_splashFragment_to_phoneAuthFragment)
+
+            if (auth.currentUser != null) {
+                findNavController().navigate(R.id.action_splashFragment_to_landingBaseActivity)
+            }
+            else {
+                findNavController().navigate(R.id.action_splashFragment_to_phoneAuthFragment)
+            }
+
         }
     }
+
+
 
 
 }

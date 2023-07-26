@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.uberdrive.R
 import com.example.uberdrive.databinding.FragmentSplashBinding
 import com.example.uberdrive.databinding.FragmentVehicleDetailsBinding
@@ -114,9 +115,8 @@ class VehicleDetailsFragment : Fragment() {
         bundle.putString("VEHICLE_NO", onboardViewModel.numberPlate)
         bundle.putInt("VEHICLE_ID", onboardViewModel.vehicleId!!)
 
-        val intent  = Intent(requireActivity(), LandingBaseActivity::class.java)
-        intent.putExtras(bundle)
-        startActivity(intent)
+        findNavController().navigate(R.id.action_vehicleDetailsFragment_to_landingBaseActivity, bundle)
+
     }
 
 

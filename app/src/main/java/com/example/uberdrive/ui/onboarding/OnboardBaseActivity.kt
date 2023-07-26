@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.uberdrive.R
 import com.example.uberdrive.databinding.ActivityMainBinding
@@ -44,9 +45,7 @@ class OnboardBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
     override fun onStart() {
         super.onStart()
 
-        if (auth.currentUser != null) {
 
-        }
     }
 
     override fun onResume() {

@@ -17,7 +17,6 @@ import com.example.uberdrive.databinding.ActivityLandingBaseBinding
 import com.example.uberdrive.ui.onboarding.OnboardBaseActivity
 import com.example.uberdrive.ui.onboarding.bottomsheets.NetworkConnectionBottomSheet
 import com.example.uberdrive.utils.FirebaseUtils
-import com.example.uberdrive.utils.LocationUtils
 import com.example.uberdrive.utils.NetworkUtils
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
@@ -54,7 +53,7 @@ class LandingBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
         get() = binding.switchButton
 
     //back press timer
-    var backPressedTime: Long = 0
+    var lastBackPressedTime: Long = 0
 
     private val landingViewModel: LandingBaseViewModel by viewModels()
 
@@ -209,15 +208,24 @@ class LandingBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
 
-        if (backPressedTime + 3000 > System.currentTimeMillis()) {
+        val currentTime = System.currentTimeMillis()
+        // If the time difference between the current and last back press is less than 2 seconds (2000 milliseconds),
+        // consider it as a double press and exit the app.
+        // If the time difference between the current and last back press is less than 2 seconds (2000 milliseconds),
+        // consider it as a double press and exit the app.
+        if (currentTime - lastBackPressedTime < 2000) {
             super.onBackPressed()
-            finishAffinity()
+            // This will exit the app.
+
+            this.finishAffinity()
+
         } else {
-            Toast.makeText(this, "Press back again to exit.", Toast.LENGTH_LONG).show()
+            // Inform the user to press back again to exit.
+            Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()
         }
-        backPressedTime = System.currentTimeMillis()
+
+        lastBackPressedTime = currentTime
 
     }
 

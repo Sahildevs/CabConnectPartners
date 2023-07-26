@@ -11,6 +11,11 @@
         <action
             android:id="@+id/action_splashFragment_to_phoneAuthFragment"
             app:destination="@id/phoneAuthFragment" />
+        <action
+            android:id="@+id/action_splashFragment_to_landingBaseActivity"
+            app:destination="@id/landingBaseActivity"
+            app:popUpTo="@id/landingBaseActivity"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/phoneAuthFragment"
@@ -39,5 +44,14 @@
     <fragment
         android:id="@+id/vehicleDetailsFragment"
         android:name="com.example.uberdrive.ui.onboarding.fragments.VehicleDetailsFragment"
-        android:label="VehicleDetailsFragment" />
+        android:label="VehicleDetailsFragment" >
+        <action
+            android:id="@+id/action_vehicleDetailsFragment_to_landingBaseActivity"
+            app:destination="@id/landingBaseActivity"
+            app:popUpTo="@id/landingBaseActivity"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <activity
+        android:id="@+id/landingBaseActivity"
+        android:name="com.example.uberdrive.ui.landing.LandingBaseActivity" />
 </navigation>
