@@ -7,16 +7,21 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.uberdrive.R
 import com.example.uberdrive.databinding.ActivityMainBinding
+import com.example.uberdrive.ui.onboarding.bottomsheets.NetworkConnectionBottomSheet
+import com.example.uberdrive.utils.NetworkUtils
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class OnboardBaseActivity : AppCompatActivity() {
+class OnboardBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
 
     lateinit var binding: ActivityMainBinding
     lateinit var navController: NavController
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var networkUtils: NetworkUtils
+
+    private  var networkConnectionBottomSheet: NetworkConnectionBottomSheet? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +29,10 @@ class OnboardBaseActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        networkUtils = NetworkUtils(this)
+
         auth = FirebaseAuth.getInstance() //Initialised firebase auth
+
 
         window.statusBarColor = ContextCompat.getColor(this, R.color.black) //Set the status bar color
 
@@ -39,5 +47,39 @@ class OnboardBaseActivity : AppCompatActivity() {
         if (auth.currentUser != null) {
 
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        //Register the broadcast receiver to listen for network state
+        networkUtils.registerBroadcastReceiver(this, networkUtils)
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        //Unregister broadcast receiver
+        networkUtils.unRegisterBroadcastReceiver(this, networkUtils)
+    }
+
+    private fun showConnectionBottomSheet() {
+        networkConnectionBottomSheet = NetworkConnectionBottomSheet()
+        networkConnectionBottomSheet!!.show(supportFragmentManager, null)
+        networkConnectionBottomSheet!!.isCancelable = false
+
+    }
+
+    override fun networkState(available: Boolean) {
+
+        if (!available) {
+            showConnectionBottomSheet()
+        }
+        else if (available && networkConnectionBottomSheet!= null) {
+            networkConnectionBottomSheet!!.dismiss()
+        }
+
+
+
     }
 }

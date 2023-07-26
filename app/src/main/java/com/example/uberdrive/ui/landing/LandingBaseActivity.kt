@@ -15,8 +15,10 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.uberdrive.R
 import com.example.uberdrive.databinding.ActivityLandingBaseBinding
 import com.example.uberdrive.ui.onboarding.OnboardBaseActivity
+import com.example.uberdrive.ui.onboarding.bottomsheets.NetworkConnectionBottomSheet
 import com.example.uberdrive.utils.FirebaseUtils
 import com.example.uberdrive.utils.LocationUtils
+import com.example.uberdrive.utils.NetworkUtils
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -24,7 +26,7 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class LandingBaseActivity : AppCompatActivity() {
+class LandingBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
 
     lateinit var binding: ActivityLandingBaseBinding
 
@@ -33,6 +35,9 @@ class LandingBaseActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 
     private lateinit var firebaseUtils: FirebaseUtils
+    private lateinit var networkUtils: NetworkUtils
+
+    private var networkConnectionBottomSheet: NetworkConnectionBottomSheet? = null
 
 
     //ACCESSING VIEWS FROM LAYOUT
@@ -59,6 +64,8 @@ class LandingBaseActivity : AppCompatActivity() {
 
         binding = ActivityLandingBaseBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        networkUtils = NetworkUtils(this)
 
         //Initialising the firebase utils class
         firebaseUtils = FirebaseUtils()
@@ -97,8 +104,22 @@ class LandingBaseActivity : AppCompatActivity() {
 
         onDrawerMenuClickListener()
 
-
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        //Register broadcast receiver to listen network state
+        networkUtils.registerBroadcastReceiver(this, networkUtils)
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        //Unregister broadcast receiver
+        networkUtils.unRegisterBroadcastReceiver(this, networkUtils)
+    }
+
 
     //Retrieve the bundle passed from the onboarding activity
     private fun retrieveBundle() {
@@ -168,7 +189,24 @@ class LandingBaseActivity : AppCompatActivity() {
         landingViewModel.goOffline()
     }
 
+    private fun showConnectionBottomSheet() {
+        networkConnectionBottomSheet = NetworkConnectionBottomSheet()
+        networkConnectionBottomSheet!!.show(supportFragmentManager, null)
+        networkConnectionBottomSheet!!.isCancelable = false
 
+    }
+
+
+    override fun networkState(available: Boolean) {
+
+        if (!available) {
+            showConnectionBottomSheet()
+        }
+        else if (available && networkConnectionBottomSheet != null) {
+            networkConnectionBottomSheet!!.dismiss()
+        }
+
+    }
 
     override fun onBackPressed() {
         super.onBackPressed()

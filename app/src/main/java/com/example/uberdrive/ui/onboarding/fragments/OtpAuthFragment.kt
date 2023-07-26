@@ -57,6 +57,7 @@ class OtpAuthFragment : Fragment() {
     private fun getBundleData() {
 
         OTP = arguments?.getString("OTP").toString()
+        Log.d("OTP", OTP)
         //RESEND_TOKEN = arguments?.getParcelable("Resend_token")!!
         PHONE_NUMBER = arguments?.getString("PHONE_NUMBER").toString()
 
