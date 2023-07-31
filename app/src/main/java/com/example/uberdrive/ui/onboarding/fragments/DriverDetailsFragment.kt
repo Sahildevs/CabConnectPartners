@@ -90,13 +90,20 @@ class DriverDetailsFragment : Fragment() {
     }
 
 
+
     private fun serviceObserver() {
 
         onboardViewModel.responseAddDriverServiceCall.observe(viewLifecycleOwner) { result ->
             if (result != null && result.isSuccessful) {
                 Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show()
+
+                //Store data to view model
                 onboardViewModel.driverId = result.body()?.driver?.id
-                findNavController().navigate(R.id.action_driverDetailsFragment_to_vehicleDetailsFragment)
+                onboardViewModel.name = result.body()?.driver?.name
+                onboardViewModel.phoneNumber = result.body()?.driver?.phone
+
+                navigateToVehicleDetails()
+
             }
             else {
                 Toast.makeText(requireContext(), "ERROR", Toast.LENGTH_SHORT).show()
@@ -104,5 +111,9 @@ class DriverDetailsFragment : Fragment() {
         }
     }
 
+    private fun navigateToVehicleDetails() {
+        findNavController().navigate(R.id.action_driverDetailsFragment_to_vehicleDetailsFragment)
+
+    }
 
 }

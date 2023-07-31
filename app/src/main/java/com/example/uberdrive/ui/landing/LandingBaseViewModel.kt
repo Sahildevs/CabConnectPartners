@@ -1,5 +1,6 @@
 package com.example.uberdrive.ui.landing
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,13 +12,14 @@ import com.example.uberdrive.data.model.UpdateVehicleResponse
 import com.example.uberdrive.data.model.VehicleStatus
 import com.example.uberdrive.data.repository.MainRepository
 import com.example.uberdrive.utils.FirebaseUtils
+import com.example.uberdrive.utils.SharedPrefUtils
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
-class LandingBaseViewModel @Inject constructor(private val repository: MainRepository): ViewModel() {
+class LandingBaseViewModel @Inject constructor(private val repository: MainRepository, private val sharedPrefUtils: SharedPrefUtils): ViewModel() {
 
     /** Driver details */
     var name: String? = null
@@ -192,5 +194,25 @@ class LandingBaseViewModel @Inject constructor(private val repository: MainRepos
     }
 
 
+
+
+    //Retrieves data from SharedPreferences
+    fun getDataFromSharedPreferences() {
+
+        name = sharedPrefUtils.getData("NAME", "null")
+        phone = sharedPrefUtils.getData("PHONE", "null")
+        driverId= sharedPrefUtils.getData("DRIVER_ID", 0)
+
+        vehicleName = sharedPrefUtils.getData("VEHICLE_NAME", "null")
+        vehicleNo = sharedPrefUtils.getData("VEHICLE_NO", "null")
+        vehicleId = sharedPrefUtils.getData("VEHICLE_ID", 0)
+
+    }
+
+    //Clears user stored data from SharedPreferences
+    fun clearSharedPreData() {
+        sharedPrefUtils.deleteData()
+
+    }
 
 }

@@ -23,7 +23,9 @@
         android:label="PhoneAuthFragment" >
         <action
             android:id="@+id/action_phoneAuthFragment_to_otpAuthFragment"
-            app:destination="@id/otpAuthFragment" />
+            app:destination="@id/otpAuthFragment"
+            app:popUpTo="@id/otpAuthFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/otpAuthFragment"
@@ -31,7 +33,14 @@
         android:label="OtpAuthFragment" >
         <action
             android:id="@+id/action_otpAuthFragment_to_driverDetailsFragment"
-            app:destination="@id/driverDetailsFragment" />
+            app:destination="@id/driverDetailsFragment"
+            app:popUpTo="@id/driverDetailsFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_otpAuthFragment_to_landingBaseActivity"
+            app:destination="@id/landingBaseActivity"
+            app:popUpTo="@id/landingBaseActivity"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/driverDetailsFragment"

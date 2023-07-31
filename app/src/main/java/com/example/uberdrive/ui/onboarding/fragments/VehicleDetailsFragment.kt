@@ -1,6 +1,7 @@
 package com.example.uberdrive.ui.onboarding.fragments
 
-import android.content.Intent
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,9 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.uberdrive.R
-import com.example.uberdrive.databinding.FragmentSplashBinding
 import com.example.uberdrive.databinding.FragmentVehicleDetailsBinding
-import com.example.uberdrive.ui.landing.LandingBaseActivity
 import com.example.uberdrive.ui.onboarding.OnboardViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -94,9 +93,13 @@ class VehicleDetailsFragment : Fragment() {
         onboardViewModel.responseAddVehicleServiceCall.observe(viewLifecycleOwner) { result->
             if (result != null && result.isSuccessful) {
                 Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show()
+
+                //Store data to view model
                 onboardViewModel.vehicleId = result.body()?.id
 
-                navigateWithData()
+                storeDataToSharedPreference()
+                navigateToLandingMainActivity()
+
             }
             else {
                 Toast.makeText(requireContext(), "ERROR", Toast.LENGTH_SHORT).show()
@@ -105,17 +108,15 @@ class VehicleDetailsFragment : Fragment() {
 
     }
 
-    //Navigates to the landing activity with data bundle
-    private fun navigateWithData() {
-        val bundle = Bundle()
-        bundle.putString("NAME", onboardViewModel.name)
-        bundle.putString("PHONE", onboardViewModel.phoneNumber)
-        bundle.putInt("DRIVER_ID", onboardViewModel.driverId!!)
-        bundle.putString("VEHICLE_NAME", onboardViewModel.modelName)
-        bundle.putString("VEHICLE_NO", onboardViewModel.numberPlate)
-        bundle.putInt("VEHICLE_ID", onboardViewModel.vehicleId!!)
+    //Store all the driver and car details to shared preferences
+    private fun storeDataToSharedPreference() {
+        onboardViewModel.addDataToSharedPref()
 
-        findNavController().navigate(R.id.action_vehicleDetailsFragment_to_landingBaseActivity, bundle)
+    }
+
+    //Navigates to the landing activity with
+    private fun navigateToLandingMainActivity() {
+        findNavController().navigate(R.id.action_vehicleDetailsFragment_to_landingBaseActivity)
 
     }
 

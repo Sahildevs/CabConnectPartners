@@ -36,6 +36,8 @@ class LandingBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
     private lateinit var firebaseUtils: FirebaseUtils
     private lateinit var networkUtils: NetworkUtils
 
+    private val SHARED_PREF_FILE = "uberdrivedatastore"
+
     private var networkConnectionBottomSheet: NetworkConnectionBottomSheet? = null
 
 
@@ -54,6 +56,7 @@ class LandingBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
 
     //back press timer
     var lastBackPressedTime: Long = 0
+
 
     private val landingViewModel: LandingBaseViewModel by viewModels()
 
@@ -99,7 +102,7 @@ class LandingBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
 
         onSwitchButtonClicked()
 
-        retrieveBundle()
+        retrieveUserDataFromSharedPref()
 
         onDrawerMenuClickListener()
 
@@ -120,20 +123,12 @@ class LandingBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
     }
 
 
-    //Retrieve the bundle passed from the onboarding activity
-    private fun retrieveBundle() {
-
-        val bundle = intent.extras
-        if (bundle != null) {
-            landingViewModel.name = bundle.getString("NAME")
-            landingViewModel.phone = bundle.getString("PHONE")
-            landingViewModel.driverId = bundle.getInt("DRIVER_ID")
-            landingViewModel.vehicleName = bundle.getString("VEHICLE_NAME")
-            landingViewModel.vehicleNo = bundle.getString("VEHICLE_NO")
-            landingViewModel.vehicleId = bundle.getInt("VEHICLE_ID")
-        }
+    //Retrieve the user data stored in shared preference
+    private fun retrieveUserDataFromSharedPref() {
+        landingViewModel.getDataFromSharedPreferences()
 
     }
+
 
     //Navigation drawer menu item click listener
     private fun onDrawerMenuClickListener() {
@@ -149,7 +144,10 @@ class LandingBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
 
                 R.id.logout -> {
                     Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show()
+
+                    landingViewModel.clearSharedPreData()
                     auth.signOut()
+
                     startActivity(Intent(this, OnboardBaseActivity::class.java))
                     finish()
                 }

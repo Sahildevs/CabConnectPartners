@@ -52,6 +52,7 @@
                 android:drawablePadding="15dp"
                 android:textColorHint="@color/yellow"
                 android:maxLines="1"
+                android:singleLine="true"
                 android:letterSpacing="0.1"
                 style="@style/text_style_yellow_medium_text"/>
 
@@ -72,6 +73,7 @@
                 android:drawablePadding="15dp"
                 android:textColorHint="@color/yellow"
                 android:letterSpacing="0.1"
+                android:singleLine="true"
                 android:background="@drawable/bg_edit_text_phone_no"
                 style="@style/text_style_yellow_medium_text"/>
 
@@ -92,6 +94,7 @@
                 android:drawablePadding="15dp"
                 android:textColorHint="@color/yellow"
                 android:letterSpacing="0.1"
+                android:singleLine="true"
                 android:background="@drawable/bg_edit_text_phone_no"
                 style="@style/text_style_yellow_medium_text"/>
 

@@ -9,15 +9,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.uberdrive.R
 import com.example.uberdrive.databinding.FragmentPhoneAuthBinding
-import com.example.uberdrive.databinding.FragmentSplashBinding
 import com.example.uberdrive.ui.onboarding.OnboardViewModel
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
@@ -49,7 +51,9 @@ class PhoneAuthFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         onClick()
+
     }
+
 
 
     private fun onClick() {
@@ -85,8 +89,56 @@ class PhoneAuthFragment : Fragment() {
                     Toast.makeText(requireContext(), "Enter a valid phone number", Toast.LENGTH_SHORT).show()
                 }
             }
+
         }
     }
+
+
+
+    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(requireActivity()) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+
+                    Toast.makeText(requireContext(), "Phone Number Verified", Toast.LENGTH_SHORT).show()
+
+                    //Store the verified phone number in the view model
+                    onboardViewModel.phoneNumber = binding.etPhone.text.toString()
+
+                    findNavController().navigate(R.id.action_otpAuthFragment_to_driverDetailsFragment)
+
+
+                } else {
+                    // Sign in failed, display a message and update the UI
+
+                    if (task.exception is FirebaseAuthInvalidCredentialsException) {
+                        // The verification code entered was invalid
+                    }
+                    // Update UI
+                }
+            }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
@@ -99,7 +151,7 @@ class PhoneAuthFragment : Fragment() {
                  user action.
              */
 
-            signInWithPhoneAuthCredential(credential)
+            //signInWithPhoneAuthCredential(credential)
         }
 
         override fun onVerificationFailed(e: FirebaseException) {
@@ -113,6 +165,7 @@ class PhoneAuthFragment : Fragment() {
             } else if (e is FirebaseTooManyRequestsException) {
                 // The SMS quota for the project has been exceeded
                 Toast.makeText(requireActivity(), "Quota exceeded", Toast.LENGTH_SHORT).show()
+
             }
 
             // Show a message and update the UI
@@ -125,41 +178,20 @@ class PhoneAuthFragment : Fragment() {
             // Save verification ID and resending token so we can use them later
 
             binding.loader.visibility = View.GONE
-
             Log.d("SENT", verificationId)
+
             /** Once the code has been successfully sent we will store the otp in the bundle and navigate to the otp screen and pass the bundle*/
             val bundle = Bundle()
             bundle.putString("OTP", verificationId)
             //bundle.putParcelable("RESEND_TOKEN", token)
-            bundle.putString("PHONE_NUMBER", pNumber)
+            bundle.putString("PHONE_NUMBER", binding.etPhone.text.toString())
             findNavController().navigate(R.id.action_phoneAuthFragment_to_otpAuthFragment, bundle)
 
         }
     }
 
 
-    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
-        auth.signInWithCredential(credential)
-            .addOnCompleteListener(requireActivity()) { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
 
-                    //Store the verified phone number in the view model
-                    onboardViewModel.phoneNumber = binding.etPhone.text.toString()
-
-                    findNavController().navigate(R.id.action_otpAuthFragment_to_driverDetailsFragment)
-
-                    //val user = task.result?.user
-                } else {
-                    // Sign in failed, display a message and update the UI
-
-                    if (task.exception is FirebaseAuthInvalidCredentialsException) {
-                        // The verification code entered was invalid
-                    }
-                    // Update UI
-                }
-            }
-    }
 
 
 }
