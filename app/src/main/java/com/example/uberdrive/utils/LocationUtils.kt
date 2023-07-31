@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
+import android.location.LocationManager
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
@@ -21,6 +22,7 @@ class LocationUtils(private val context: Context) {
     private lateinit var locationRequest: LocationRequest
     private var locationListener: LocationListenerCallback? = null
     private var locationReceiver: LocationReceiverCallback? = null
+
 
 
 
@@ -76,6 +78,13 @@ class LocationUtils(private val context: Context) {
     //Stops receiving location updates
     fun stopLocationUpdates() {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback)
+    }
+
+
+    // Function to check if the device's location (GPS) is turned on
+    fun isLocationEnabled(): Boolean {
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 
 

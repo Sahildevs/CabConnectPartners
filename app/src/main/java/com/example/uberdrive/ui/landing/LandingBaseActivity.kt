@@ -17,6 +17,7 @@ import com.example.uberdrive.databinding.ActivityLandingBaseBinding
 import com.example.uberdrive.ui.onboarding.OnboardBaseActivity
 import com.example.uberdrive.ui.onboarding.bottomsheets.NetworkConnectionBottomSheet
 import com.example.uberdrive.utils.FirebaseUtils
+import com.example.uberdrive.utils.LocationUtils
 import com.example.uberdrive.utils.NetworkUtils
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
@@ -35,6 +36,7 @@ class LandingBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
 
     private lateinit var firebaseUtils: FirebaseUtils
     private lateinit var networkUtils: NetworkUtils
+    private lateinit var locationUtils: LocationUtils
 
     private val SHARED_PREF_FILE = "uberdrivedatastore"
 
@@ -72,6 +74,8 @@ class LandingBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
         //Initialising the firebase utils class
         firebaseUtils = FirebaseUtils()
 
+        locationUtils = LocationUtils(this)
+
 
         //Customized status bar
         window.statusBarColor = ContextCompat.getColor(this, R.color.black)
@@ -99,6 +103,8 @@ class LandingBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
         actionbar.setNavigationOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
+
+        checkIsLocationTurnedOn()
 
         onSwitchButtonClicked()
 
@@ -184,6 +190,14 @@ class LandingBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
     /** Firebase service call */
     private fun goOffline() {
         landingViewModel.goOffline()
+    }
+
+    private fun checkIsLocationTurnedOn() {
+        val isLocationOn = locationUtils.isLocationEnabled()
+
+        if (!isLocationOn) {
+           Toast.makeText(this, "Please Turn On Device Location", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun showConnectionBottomSheet() {
