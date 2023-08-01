@@ -1,7 +1,7 @@
 
 # CabConnect Partners
 
-CabConnect Partners is an Android application designed for cab drivers to offer efficient and reliable cab services to potential customers. Born out of obsession and curiosity to explore the inner workings of renowned cab-hailing apps like Uber. The app embodies best practices such as the MVVM architecture, App modularization, and the integration of Jetpack components, resulting in a well-organized and scalable codebase. Cab drivers can join the platform by undergoing a seamless onboarding process, providing essential personal and cab details. With real-time functionality, discoverability options, and integrated Google Maps navigation enable drivers to deliver exceptional cab services and foster seamless communication with customers. 
+CabConnect Partners is an Android application designed for cab drivers to offer efficient and reliable cab services to potential customers. Born out of obsession and curiosity to explore the inner workings of renowned cab-hailing apps like Uber. The app embodies best practices such as the MVVM architecture, App modularization, and the integration of Jetpack components, resulting in a well-organized and scalable codebase. Cab drivers can join the platform by undergoing a seamless onboarding process, providing essential personal and cab details. With real-time functionality, discoverability options, and integrated Google Maps navigation, CabConnect Partners enable drivers to deliver exceptional cab services and foster seamless communication with customers. 
 
 
 ## Features
