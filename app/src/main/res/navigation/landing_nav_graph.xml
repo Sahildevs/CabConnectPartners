@@ -7,6 +7,19 @@
 
     <fragment
         android:id="@+id/landingMapsFragment"
-        android:name="com.example.uberdrive.ui.landing.fragments.MapsFragment"
-        tools:layout="@layout/fragment_maps" />
+        android:name="com.example.uberdrive.ui.landing.home.fragments.MapsFragment"
+        tools:layout="@layout/fragment_maps" >
+        <action
+            android:id="@+id/action_landingMapsFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userProfileFragment"
+        android:name="com.example.uberdrive.ui.landing.profile.UserProfileFragment">
+        <action
+            android:id="@+id/action_userProfileFragment_to_landingMapsFragment"
+            app:destination="@id/landingMapsFragment"
+            app:popUpTo="@id/landingMapsFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

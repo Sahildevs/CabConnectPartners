@@ -1,4 +1,4 @@
-package com.example.uberdrive.ui.landing.fragments
+package com.example.uberdrive.ui.landing.home.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -24,10 +24,10 @@ import com.example.uberdrive.data.model.GetTripDetailsResponse
 import com.example.uberdrive.data.model.VehicleStatus
 import com.example.uberdrive.databinding.FragmentMapsBinding
 import com.example.uberdrive.ui.landing.LandingBaseViewModel
-import com.example.uberdrive.ui.landing.bottomsheets.EndTripBottomSheet
-import com.example.uberdrive.ui.landing.bottomsheets.RideRequestBottomSheet
-import com.example.uberdrive.ui.landing.bottomsheets.RiderDetailsBottomSheet
-import com.example.uberdrive.ui.landing.bottomsheets.StartTripBottomSheet
+import com.example.uberdrive.ui.landing.home.bottomsheets.EndTripBottomSheet
+import com.example.uberdrive.ui.landing.home.bottomsheets.RideRequestBottomSheet
+import com.example.uberdrive.ui.landing.home.bottomsheets.RiderDetailsBottomSheet
+import com.example.uberdrive.ui.landing.home.bottomsheets.StartTripBottomSheet
 import com.example.uberdrive.utils.FirebaseUtils
 import com.example.uberdrive.utils.LocationUtils
 

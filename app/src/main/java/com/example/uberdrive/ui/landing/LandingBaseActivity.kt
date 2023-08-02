@@ -2,6 +2,7 @@ package com.example.uberdrive.ui.landing
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +12,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.uberdrive.R
 import com.example.uberdrive.databinding.ActivityLandingBaseBinding
@@ -99,10 +101,10 @@ class LandingBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
         setSupportActionBar(actionbar)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-        //On hamburger clicked open the navigation drawer
-        actionbar.setNavigationOnClickListener {
-            drawerLayout.openDrawer(GravityCompat.START)
-        }
+//        //On hamburger clicked open the navigation drawer
+//        actionbar.setNavigationOnClickListener {
+//            drawerLayout.openDrawer(GravityCompat.START)
+//        }
 
         checkIsLocationTurnedOn()
 
@@ -143,8 +145,10 @@ class LandingBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
             when(it.itemId){
 
                 R.id.profile -> {
-                    Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show()
-                    //drawerLayout.closeDrawer(Gravity.LEFT)
+                    Toast.makeText(this, "${landingViewModel.name}", Toast.LENGTH_SHORT).show()
+                    drawerLayout.closeDrawer(Gravity.LEFT)
+                    navController.navigate(R.id.action_landingMapsFragment_to_userProfileFragment)
+
                 }
 
 
@@ -218,6 +222,13 @@ class LandingBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
         }
 
     }
+
+    //This method is responsible for handling the navigation to the appropriate parent destination when the "up" button is pressed.
+    override fun onSupportNavigateUp(): Boolean {
+        return NavigationUI.navigateUp(navController, appBarConfiguration)
+                || super.onSupportNavigateUp()
+    }
+
 
     override fun onBackPressed() {
 
