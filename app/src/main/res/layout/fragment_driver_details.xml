@@ -4,6 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <variable
+            name="viewmodel"
+            type="com.example.uberdrive.ui.onboarding.OnboardViewModel" />
 
     </data>
 
@@ -31,9 +34,10 @@
                 style="@style/text_style_large_title_text" />
 
             <TextView
-                android:layout_width="320dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Share your details &amp; enjoy a customized ride experience."
+                android:letterSpacing="0.02"
                 style="@style/text_style_yellow_medium_text" />
 
             <Space
@@ -66,9 +70,9 @@
                 android:layout_height="50dp"
                 android:layout_marginHorizontal="20dp"
                 android:padding="10dp"
-                android:hint="Phone"
+                android:text="@{viewmodel.phoneNumber}"
                 android:maxLength="10"
-                android:enabled="true"
+                android:enabled="false"
                 android:drawableStart="@drawable/ic_phone"
                 android:drawablePadding="15dp"
                 android:textColorHint="@color/yellow"
@@ -90,6 +94,7 @@
                 android:hint="License Number"
                 android:maxLength="10"
                 android:enabled="true"
+                android:inputType="number"
                 android:drawableStart="@drawable/ic_license"
                 android:drawablePadding="15dp"
                 android:textColorHint="@color/yellow"

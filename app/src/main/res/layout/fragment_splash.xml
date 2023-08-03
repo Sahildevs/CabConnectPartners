@@ -34,11 +34,11 @@
 
 
 
-
             <TextView
-                android:layout_width="250dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Step into the driving                     seat &amp; unlock new possibilities."
+                android:text="Step into the driving seat &amp; unlock new possibilities."
+                android:letterSpacing="0.01"
                 style="@style/text_style_yellow_medium_text" />
 
             <Space

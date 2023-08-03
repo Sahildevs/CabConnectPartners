@@ -35,6 +35,9 @@ class DriverDetailsFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentDriverDetailsBinding.inflate(inflater, container, false)
+        binding.apply {
+            viewmodel = onboardViewModel
+        }
         return binding.root
     }
 

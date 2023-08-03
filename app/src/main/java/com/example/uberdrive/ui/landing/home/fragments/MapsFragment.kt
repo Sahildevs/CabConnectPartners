@@ -168,7 +168,8 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
 
         landingViewModel.responseUpdateVehicleDataServiceCall.observe(viewLifecycleOwner, Observer { result ->
             if (result.isSuccessful) {
-                Toast.makeText(requireContext(), "Car Status : ${result.body()?.state}", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(requireContext(), "Car Status : ${result.body()?.state}", Toast.LENGTH_SHORT).show()
+                Log.d("State", "Car Status : ${result.body()?.state}")
 
             }
         })
@@ -427,9 +428,9 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
 
     //Trip request rejected by the driver
     override fun onClickRejectTripRequest() {
+        rideRequestBottomSheet.dismiss()
         landingViewModel.updateRideRequestStatus("REJECTED")
         declineTripRequest()
-        rideRequestBottomSheet.dismiss()
         updateVehicleData(VehicleStatus.AVAILABLE)
     }
 
@@ -440,9 +441,7 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
         addDropOffPoint()
     }
 
-    override fun makePhoneCall() {
 
-    }
 
     //End the trip
     override fun endTrip() {
