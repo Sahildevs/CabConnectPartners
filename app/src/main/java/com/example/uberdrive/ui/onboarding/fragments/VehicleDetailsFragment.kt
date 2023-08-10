@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -60,6 +61,7 @@ class VehicleDetailsFragment : Fragment() {
             val areInputFilled = checkInputFields(binding.etModelName, binding.etNumberPlate)
 
             if (areInputFilled) {
+                binding.loader.isVisible = true
                 getFieldValues()
                 addVehicle()
             }
@@ -92,7 +94,8 @@ class VehicleDetailsFragment : Fragment() {
 
         onboardViewModel.responseAddVehicleServiceCall.observe(viewLifecycleOwner) { result->
             if (result != null && result.isSuccessful) {
-                Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show()
+                binding.loader.isVisible = false
 
                 //Store data to view model
                 onboardViewModel.vehicleId = result.body()?.id

@@ -15,6 +15,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -311,11 +313,11 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
     //Adds pickup location marker on map
     private fun addPickupPoint() {
 
-        val iconBitmap = BitmapFactory.decodeResource(resources, R.drawable.pickup_marker)
-        val customMarker = BitmapDescriptorFactory.fromBitmap(iconBitmap)
+        val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_pickup_marker)
+        val bitmap = drawable?.toBitmap()
 
         val latLng = LatLng(landingViewModel.pickUpLat!!, landingViewModel.pickUpLng!!)
-        pickupMarker = mMap.addMarker(MarkerOptions().position(latLng).title("PickUp").icon(customMarker))
+        pickupMarker = mMap.addMarker(MarkerOptions().position(latLng).title("PickUp").icon(BitmapDescriptorFactory.fromBitmap(bitmap!!)))
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15f))
 
     }
@@ -324,11 +326,11 @@ class MapsFragment : Fragment(), RideRequestBottomSheet.Callback, StartTripBotto
     //Adds drop location marker on map
     private fun addDropOffPoint() {
 
-        val iconBitmap = BitmapFactory.decodeResource(resources, R.drawable.drop_marker)
-        val customMarker = BitmapDescriptorFactory.fromBitmap(iconBitmap)
+        val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_dropoff_marker)
+        val bitmap = drawable?.toBitmap()
 
         val latLng = LatLng(landingViewModel.dropLat!!, landingViewModel.dropLng!!)
-        dropMarker = mMap.addMarker(MarkerOptions().position(latLng).title("Drop").icon(customMarker))
+        dropMarker = mMap.addMarker(MarkerOptions().position(latLng).title("Drop").icon(BitmapDescriptorFactory.fromBitmap(bitmap!!)))
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15f))
 
     }

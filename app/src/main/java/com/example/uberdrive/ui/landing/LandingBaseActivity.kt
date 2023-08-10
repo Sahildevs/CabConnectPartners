@@ -80,7 +80,7 @@ class LandingBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
 
 
         //Customized status bar
-        window.statusBarColor = ContextCompat.getColor(this, R.color.black)
+        //window.statusBarColor = ContextCompat.getColor(this, R.color.black)
 
         auth = FirebaseAuth.getInstance()
 
@@ -145,7 +145,7 @@ class LandingBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
             when(it.itemId){
 
                 R.id.profile -> {
-                    Toast.makeText(this, "${landingViewModel.name}", Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(this, "${landingViewModel.name}", Toast.LENGTH_SHORT).show()
                     drawerLayout.closeDrawer(Gravity.LEFT)
                     navController.navigate(R.id.action_landingMapsFragment_to_userProfileFragment)
 
@@ -153,7 +153,7 @@ class LandingBaseActivity : AppCompatActivity(), NetworkUtils.NetworkCallback {
 
 
                 R.id.logout -> {
-                    Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show()
 
                     landingViewModel.clearSharedPreData()
                     auth.signOut()

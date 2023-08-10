@@ -161,7 +161,7 @@ class OtpAuthFragment : Fragment() {
             if (result.body() != null) {
 
                 //Its a existing driver, skip the signup flow and login directly
-                Toast.makeText(requireContext(), "User Already Exists", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(requireContext(), "User Already Exists", Toast.LENGTH_SHORT).show()
                 binding.loader2.visibility = View.GONE
 
                 //Save existing driver data to view model
@@ -174,7 +174,7 @@ class OtpAuthFragment : Fragment() {
             }
             else {
                 //Its a new user, continue with the signup flow
-                Toast.makeText(requireContext(), "User Doesent Exists", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(requireContext(), "User Doesent Exists", Toast.LENGTH_SHORT).show()
                 binding.loader2.visibility = View.GONE
                 findNavController().navigate(R.id.action_otpAuthFragment_to_driverDetailsFragment)
             }
